@@ -60,12 +60,12 @@ def graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
 
     plt.show()
 
-    def three_d_graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
-                 u_approximation_y: np.ndarray,u_approximation_z: np.ndarray,
-                 t: np.ndarray) -> None:
-          """Graphs the original trajectory and the SINDy trajectory in 3D space
-          """
 
+def three_d_graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
+                u_approximation_y: np.ndarray,u_approximation_z: np.ndarray,
+                t: np.ndarray) -> None:
+    """Graphs the original trajectory and the SINDy trajectory in 3D space
+    """
     # Model the trajectory in 3D 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -75,7 +75,7 @@ def graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
     ax.set_ylabel('Y (m)')
     ax.set_zlabel('Z (m)')
     ax.set_title('3D Projectile Motion')  
-    
+
     # Plot the starting point 
     ax.scatter(u[0, 0], u[0, 1], u[0, 2], color='red', label='Start')
 

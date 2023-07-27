@@ -1,16 +1,20 @@
 """Predicts a trajectory using the SINDy model."""
 
+import argparse
+import logging
+import pickle
+from pathlib import Path
+from typing import Tuple
 from typing import Tuple
 
+import h5py
 import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import pysindy as ps
 from sklearn.metrics import mean_squared_error
-from pysindy.differentiation import FiniteDifference, SINDyDerivative
+from pysindy.differentiation import FiniteDifference
 from pysindy.optimizers import STLSQ
 
-import commons
+from commons import DATA_DIR, OUTPUT_DIR, THRESHOLD, MAX_ITERATIONS, NOISE_LEVEL
 
 def fit1(u: np.ndarray,
         t: np.ndarray) -> Tuple[ps.SINDy, ps.SINDy, np.ndarray, np.ndarray]:
@@ -89,13 +93,36 @@ def fit2(u: np.ndarray,
 def main() -> None:
     # logging.info("Fitting.")
 
-    # Generate the data for a projectile motion problem by calling the main in that file
+    # Get the u and t from projectile motion data
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
+    parser.add_argument("--output_dir", dest="output_dir", default=OUTPUT_DIR)
+    args = parser.parse_args()
+    data_dir = args.data_dir
+    output_dir = args.output_dir
 
-    # Get the u and t from projectile motion 
+    data_file_dir = Path(data_dir, "data.hdf5")
+    with h5py.File(data_file_dir, "r") as file_read:
+        u = np.array(file_read.get("u"))
+        t = np.array(file_read.get("t"))
 
     # add noise to the data using rmse
-    rmse = mean_squared_error(x_train, np.zeros((x_train).shape), squared=False)
-    u_noise = x_train + np.random.normal(0, rmse * NOISE_LEVEL, x_train.shape)  # Add noise
+    rmse = mean_squared_error(u, np.zeros((u).shape), squared=False)
+    u_noise = u + np.random.normal(0, rmse * NOISE_LEVEL, u.shape)  # Add noise
 
-    (model_all, xdot, ydot, zdot) = fit2(u_noise, t) # base case we are using fit 2 for now 
+    (model_all, xdot, ydot, zdot) = fit2(u_noise, t) # base case we are using fit 2 for now
 
+    Path(output_dir).mkdir(exist_ok=True)
+    output_file_dir = Path(output_dir, "models.pkl")
+    with open(output_file_dir, "wb") as file:
+        # pickle.dump((modelx, modely), file)
+        pickle.dump(model_all, file)
+
+    output_file_dir = Path(output_dir, "derivatives.hdf5")
+    with h5py.File(output_file_dir, "w") as file:
+        file.create_dataset(name="xdot", data=xdot)
+        file.create_dataset(name="ydot", data=ydot)
+        file.create_dataset(name="zdot", data=zdot) 
+
+if __name__ == "__main__":
+    main()
