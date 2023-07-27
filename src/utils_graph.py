@@ -60,7 +60,7 @@ def graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
 
     plt.show()
 
-    def 3D_graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
+    def 3d_graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
                  u_approximation_y: np.ndarray,u_approximation_z: np.ndarray,
                  t: np.ndarray) -> None:
     """Graphs the original trajectory and the SINDy trajecctory in 3D space
@@ -76,10 +76,10 @@ def graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
     ax.set_zlabel('Z (m)')
     ax.set_title('3D Projectile Motion')  
     
-    # Plot the ball at the start of the trajectory
+    # Plot the starting point 
     ax.scatter(u[0, 0], u[0, 1], u[0, 2], color='red', label='Start')
 
-    # Plot the trajectory of the ball (without noise)
+    # Plot the trajectory of the obstacle (without noise)
     ax.plot(u[:, 0], u[:, 1], u[: , 2], color='black', label='Ground truth')
 
     # Plot the SINDy approximation of the trajectory

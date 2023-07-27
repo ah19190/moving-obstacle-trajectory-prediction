@@ -1,5 +1,7 @@
 "Generate the data for a projectile motion problem."
 
+import numpy as np 
+
 # Constants 
 g = 9.81  # Acceleration due to gravity (m/s^2)
 
