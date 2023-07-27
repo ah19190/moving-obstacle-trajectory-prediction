@@ -1,5 +1,8 @@
 "Generate the data for a projectile motion problem."
 
+from pathlib import Path
+
+import h5py
 import numpy as np 
 
 # Constants 
@@ -16,9 +19,6 @@ z0 = 10
 v0 = 40  # Initial velocity (m/s)
 launch_angle = 30  # Launch angle in degrees
 
-# Time points for the trajectory
-t = np.arange(0, 2*v0/g, dt)
-
 # Function to calculate the projectile motion (remove z to follow the example)
 def projectile_motion(v0, theta_deg, t):
     theta_rad = np.radians(theta_deg)
@@ -33,3 +33,19 @@ def projectile_motion(v0, theta_deg, t):
     return np.array([x, y, z])
     # return np.array([x, y])
 
+def main() -> None:
+    # logging.info("Generating data.")
+
+    # Time points for the trajectory
+    t = np.arange(0, 2*v0/g, dt)
+
+    # Calculate the projectile motion
+    u = projectile_motion(v0, launch_angle, t).T
+
+    data_file_path = Path(data_dir, "data.hdf5")
+    with h5py.File(data_file_path, "w") as file:
+        file.create_dataset(name="u", data=u)
+        file.create_dataset(name="t", data=t)
+
+if __name__ == "__main__":
+    main()

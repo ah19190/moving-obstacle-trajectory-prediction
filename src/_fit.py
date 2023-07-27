@@ -10,6 +10,8 @@ from sklearn.metrics import mean_squared_error
 from pysindy.differentiation import FiniteDifference, SINDyDerivative
 from pysindy.optimizers import STLSQ
 
+import commons
+
 def fit1(u: np.ndarray,
         t: np.ndarray) -> Tuple[ps.SINDy, ps.SINDy, np.ndarray, np.ndarray]:
     """Uses PySINDy to find the equation that best fits the data u. Includes using derivatives of equations
@@ -87,4 +89,13 @@ def fit2(u: np.ndarray,
 def main() -> None:
     # logging.info("Fitting.")
 
-    (modelx, modely, xdot, ydot) = fit1(u, t) # base case we are using fit 1 for now 
+    # Generate the data for a projectile motion problem by calling the main in that file
+
+    # Get the u and t from projectile motion 
+
+    # add noise to the data using rmse
+    rmse = mean_squared_error(x_train, np.zeros((x_train).shape), squared=False)
+    u_noise = x_train + np.random.normal(0, rmse * NOISE_LEVEL, x_train.shape)  # Add noise
+
+    (model_all, xdot, ydot, zdot) = fit2(u_noise, t) # base case we are using fit 2 for now 
+
