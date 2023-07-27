@@ -1,9 +1,13 @@
 "Generate the data for a projectile motion problem."
 
 from pathlib import Path
+import argparse
+import logging
 
 import h5py
 import numpy as np 
+
+from commons import ORIGINAL_DATA_DIR, DATA_DIR
 
 # Constants 
 g = 9.81  # Acceleration due to gravity (m/s^2)
@@ -35,6 +39,14 @@ def projectile_motion(v0, theta_deg, t):
 
 def main() -> None:
     # logging.info("Generating data.")
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
+    parser.add_argument("--original-data_dir",
+                        dest="original_data_dir",
+                        default=ORIGINAL_DATA_DIR)
+    args = parser.parse_args()
+    data_dir = args.data_dir
 
     # Time points for the trajectory
     t = np.arange(0, 2*v0/g, dt)
