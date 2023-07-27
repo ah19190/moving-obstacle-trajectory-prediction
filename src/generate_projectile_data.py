@@ -5,6 +5,8 @@ import numpy as np
 # Constants 
 g = 9.81  # Acceleration due to gravity (m/s^2)
 
+dt = 0.1  # Time step (s)
+
 # starting point of ball )
 x0 = 40
 y0 = 50

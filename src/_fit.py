@@ -9,7 +9,6 @@ import pysindy as ps
 from sklearn.metrics import mean_squared_error
 from pysindy.differentiation import FiniteDifference, SINDyDerivative
 from pysindy.optimizers import STLSQ
-import utils_graph
 
 def fit1(u: np.ndarray,
         t: np.ndarray) -> Tuple[ps.SINDy, ps.SINDy, np.ndarray, np.ndarray]:

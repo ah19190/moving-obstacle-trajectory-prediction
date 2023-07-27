@@ -60,11 +60,11 @@ def graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
 
     plt.show()
 
-    def 3d_graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
+    def three_d_graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
                  u_approximation_y: np.ndarray,u_approximation_z: np.ndarray,
                  t: np.ndarray) -> None:
-    """Graphs the original trajectory and the SINDy trajecctory in 3D space
-    """
+          """Graphs the original trajectory and the SINDy trajectory in 3D space
+          """
 
     # Model the trajectory in 3D 
     fig = plt.figure()
