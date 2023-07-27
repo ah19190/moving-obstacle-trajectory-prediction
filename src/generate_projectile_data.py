@@ -7,7 +7,7 @@ import logging
 import h5py
 import numpy as np 
 
-from commons import ORIGINAL_DATA_DIR, DATA_DIR, dt, x0, y0, z0, v0, launch_angle
+from commons import ORIGINAL_DATA_DIR, DATA_DIR, TIME, dt, x0, y0, z0, v0, launch_angle
 
 # Constants 
 g = 9.81  # Acceleration due to gravity (m/s^2)
@@ -38,7 +38,7 @@ def main() -> None:
     data_dir = args.data_dir
 
     # Time points for the trajectory
-    t = np.arange(0, 2*v0/g, dt)
+    t = np.arange(0, TIME, dt)
 
     # Calculate the projectile motion
     u = projectile_motion(v0, launch_angle, t).T

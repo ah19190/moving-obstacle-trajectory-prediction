@@ -12,6 +12,14 @@ from IPython import get_ipython
 from commons import DATA_DIR, OUTPUT_DIR
 from utils_graph import graph_result, three_d_graph_result
 
+# TODO: Add a function to predict the next t seconds of the data using the model
+
+# Initialize integrator keywords for solve_ivp to replicate the odeint defaults
+integrator_keywords = {}
+integrator_keywords["rtol"] = 1e-12
+integrator_keywords["method"] = "LSODA"
+integrator_keywords["atol"] = 1e-12
+
 def main() -> None:
     # logging.info("Predicting.")
 
