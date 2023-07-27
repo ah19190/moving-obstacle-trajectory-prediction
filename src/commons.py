@@ -1,5 +1,7 @@
 "Constants and common code."
 
+from pathlib import Path
+
 # Directory names.
 ORIGINAL_DATA_DIR = str(Path(Path(__file__).parent.parent, "original-data"))
 DATA_DIR = str(Path(Path(__file__).parent.parent, "data"))

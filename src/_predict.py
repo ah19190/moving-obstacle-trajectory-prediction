@@ -9,7 +9,7 @@ import h5py
 import numpy as np
 from IPython import get_ipython
 
-from common import DATA_DIR, OUTPUT_DIR
+from commons import DATA_DIR, OUTPUT_DIR
 from utils_graph import graph_result, three_d_graph_result
 
 def main() -> None:
