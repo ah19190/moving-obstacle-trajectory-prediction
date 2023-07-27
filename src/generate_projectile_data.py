@@ -7,21 +7,10 @@ import logging
 import h5py
 import numpy as np 
 
-from commons import ORIGINAL_DATA_DIR, DATA_DIR
+from commons import ORIGINAL_DATA_DIR, DATA_DIR, dt, x0, y0, z0, v0, launch_angle
 
 # Constants 
 g = 9.81  # Acceleration due to gravity (m/s^2)
-
-dt = 0.1  # Time step (s)
-
-# starting point of ball )
-x0 = 40
-y0 = 50
-z0 = 10
-
-# Initial conditions
-v0 = 40  # Initial velocity (m/s)
-launch_angle = 30  # Launch angle in degrees
 
 # Function to calculate the projectile motion (remove z to follow the example)
 def projectile_motion(v0, theta_deg, t):

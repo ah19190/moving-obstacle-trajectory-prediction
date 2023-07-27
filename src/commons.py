@@ -13,3 +13,15 @@ MAX_ITERATIONS = 10
 
 # Noise level for the data
 NOISE_LEVEL = 0.02
+
+# Constants for the projectile motion problem
+dt = 0.1 # Time step (s)
+
+# starting point of ball 
+x0 = 40
+y0 = 50
+z0 = 10
+
+# Initial conditions
+v0 = 40  # Initial velocity (m/s)
+launch_angle = 30  # Launch angle in degrees
