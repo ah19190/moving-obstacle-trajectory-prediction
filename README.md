@@ -13,13 +13,13 @@ Code for my dissertation on moving object trajectory prediction using PySINDy
 
 ## Introduction
 
-<!-->
+<!--
 Provide a brief introduction to your project here. Explain what the project does and its main purpose.
 --> 
 
 ## Features
 
-<!-->
+<!--
 List the key features of your project. You can use bullet points for this.
 
 - Feature 1
@@ -32,10 +32,6 @@ List the key features of your project. You can use bullet points for this.
 <!--
 Explain how to install and set up the project. Include any prerequisites and dependencies that need to be installed.
 
-```bash
-pip install your_package_name
-
-```
 -->
 
 ## Running the code  
