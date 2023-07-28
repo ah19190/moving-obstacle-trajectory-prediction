@@ -85,7 +85,7 @@ def fit2(u: np.ndarray,
                         feature_names=["x", "xdot", "y", "ydot", "z", "zdot"],
                         discrete_time=False)
     model_all.fit(data_all, t=t, ensemble=True)
-    model_all.print()
+    model_all.print() # comment this out if you do not want the model printed to terminal 
 
     return (model_all, xdot, ydot, zdot)
 

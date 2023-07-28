@@ -25,5 +25,5 @@ y0 = 20
 z0 = 10
 
 # Initial conditions
-v0 = 40  # Initial velocity (m/s)
+v0 = 80  # Initial velocity (m/s)
 launch_angle = 30  # Launch angle in degrees

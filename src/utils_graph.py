@@ -76,11 +76,14 @@ def three_d_graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
     ax.set_zlabel('Z (m)')
     ax.set_title('3D Projectile Motion')  
 
-    # Plot the starting point 
-    ax.scatter(u[0, 0], u[0, 1], u[0, 2], color='red', label='Start')
+    # Plot the starting point of the data
+    ax.scatter(u[0, 0], u[0, 1], u[0, 2], color='red', label='Start of training data')
 
     # Plot the trajectory of the obstacle (without noise)
     ax.plot(u[:, 0], u[:, 1], u[: , 2], color='black', label='Ground truth')
+
+    # Plot the starting point of the SINDy approximation
+    ax.scatter(u_approximation_x[0, 0], u_approximation_y[0, 0], u_approximation_z[0, 0], color='green', label='Start of SINDy approximation')
 
     # Plot the SINDy approximation of the trajectory
     ax.plot(u_approximation_x, u_approximation_y, u_approximation_z, color='blue', label='SINDy')
