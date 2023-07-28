@@ -1,8 +1,6 @@
 """Predicts a trajectory using the SINDy model."""
 # This will predict PREDICTION_TIME seconds of data using the model
 
-# TODO: get it to predict the next PREDICTION_TIME seconds of data using the model
-
 import argparse
 import logging
 import pickle
@@ -15,8 +13,6 @@ from IPython import get_ipython
 
 from commons import DATA_DIR, OUTPUT_DIR, TIME_OF_DATA, PREDICTION_TIME, dt
 from utils_graph import graph_result, three_d_graph_result
-
-# TODO: Add a function to predict the next t seconds of the data using the model
 
 # Initialize integrator keywords for solve_ivp to replicate the odeint defaults
 integrator_keywords = {}

@@ -8,11 +8,11 @@ DATA_DIR = str(Path(Path(__file__).parent.parent, "data"))
 OUTPUT_DIR = str(Path(Path(__file__).parent.parent, "output"))
 
 # STLSQ constants 
-THRESHOLD = 0.01
+THRESHOLD = 0.05
 MAX_ITERATIONS = 10
 
 # Noise level for the data
-NOISE_LEVEL = 0.02
+NOISE_LEVEL = 0.01
 
 # Constants for the projectile motion problem
 dt = 0.1 # Time step (s)
