@@ -1,4 +1,5 @@
 """Predicts a trajectory using the SINDy model."""
+# TODO: get this to work for fit1 as well 
 
 import argparse
 import logging
