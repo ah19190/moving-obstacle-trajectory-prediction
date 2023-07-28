@@ -7,7 +7,7 @@ import logging
 import h5py
 import numpy as np 
 
-from commons import ORIGINAL_DATA_DIR, DATA_DIR, TIME, dt, x0, y0, z0, v0, launch_angle
+from commons import ORIGINAL_DATA_DIR, DATA_DIR, TIME_OF_DATA, PREDICTION_TIME, dt, x0, y0, z0, v0, launch_angle
 
 # Constants 
 g = 9.81  # Acceleration due to gravity (m/s^2)
@@ -38,15 +38,20 @@ def main() -> None:
     data_dir = args.data_dir
 
     # Time points for the trajectory
-    t = np.arange(0, TIME, dt)
+    t = np.arange(0, TIME_OF_DATA, dt)
+    # Time points for the prediction
+    t_ground_truth = np.arange(0, TIME_OF_DATA + PREDICTION_TIME, dt) # predict the next PREDICTION_TIME seconds of data
 
     # Calculate the projectile motion
     u = projectile_motion(v0, launch_angle, t).T
+    u_ground_truth = projectile_motion(v0, launch_angle, t_ground_truth).T
 
     data_file_path = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_path, "w") as file:
         file.create_dataset(name="u", data=u)
         file.create_dataset(name="t", data=t)
+        file.create_dataset(name="t_ground_truth", data=t_ground_truth)
+        file.create_dataset(name="u_ground_truth", data=u_ground_truth)
 
 if __name__ == "__main__":
     main()

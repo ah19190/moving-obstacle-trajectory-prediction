@@ -1,4 +1,8 @@
 """Predicts a trajectory using the SINDy model."""
+# This will predict PREDICTION_TIME seconds of data using the model
+
+# TODO: get it to predict the next PREDICTION_TIME seconds of data using the model
+
 import argparse
 import logging
 import pickle
@@ -9,7 +13,7 @@ import h5py
 import numpy as np
 from IPython import get_ipython
 
-from commons import DATA_DIR, OUTPUT_DIR
+from commons import DATA_DIR, OUTPUT_DIR, TIME_OF_DATA, PREDICTION_TIME, dt
 from utils_graph import graph_result, three_d_graph_result
 
 # TODO: Add a function to predict the next t seconds of the data using the model
@@ -36,6 +40,8 @@ def main() -> None:
     with h5py.File(data_file_path, "r") as file_read:
         u = np.array(file_read.get("u"))
         t = np.array(file_read.get("t"))
+        u_ground_truth = np.array(file_read.get("u_ground_truth"))
+        t_ground_truth = np.array(file_read.get("t_ground_truth"))
     
     models_file_path = Path(output_dir, "models.pkl")
     with open(models_file_path, "rb") as file_read:
@@ -47,18 +53,21 @@ def main() -> None:
         ydot = np.array(file_read.get("ydot"))
         zdot = np.array(file_read.get("zdot"))
 
+    # Time points for the prediction
+    t_predict = np.arange(TIME_OF_DATA , TIME_OF_DATA + PREDICTION_TIME, dt) # predict the next PREDICTION_TIME seconds of data
+
     # Predict the trajectory of the ball using the model
-    u0_all = np.hstack((u[0], xdot[0], ydot[0], zdot[0])) #use u here instead of u_noise as we want it to start from same starting point
-    u_approximation_all = model_all.simulate(u0_all, t)
+    u0_all = np.hstack((u[-1], xdot[-1], ydot[-1], zdot[-1])) #use u here instead of u_noise as we want it to start from same starting point
+    u_approximation_all = model_all.simulate(u0_all, t_predict)
 
     # Reshape the predictions into separate arrays for each dimension
     u_approximation_x = u_approximation_all[:, :1]
     u_approximation_y = u_approximation_all[:, 1:2]
     u_approximation_z = u_approximation_all[:, 2:3]
 
-    graph_result(u, u_approximation_x, u_approximation_y, u_approximation_z, t)
+    # graph_result(u_ground_truth, u_approximation_x, u_approximation_y, u_approximation_z, t_ground_truth)
 
-    three_d_graph_result(u, u_approximation_x, u_approximation_y, u_approximation_z, t)
+    three_d_graph_result(u_ground_truth, u_approximation_x, u_approximation_y, u_approximation_z, t_ground_truth)
 
 
 if __name__ == "__main__":
