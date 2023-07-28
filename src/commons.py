@@ -8,7 +8,9 @@ DATA_DIR = str(Path(Path(__file__).parent.parent, "data"))
 OUTPUT_DIR = str(Path(Path(__file__).parent.parent, "output"))
 
 # STLSQ constants 
-THRESHOLD = 0.05
+THRESHOLD_MIN = 0.01
+THRESHOLD_MAX  = 0.1
+NUMBER_OF_THRESHOLD_VALUES = 11
 MAX_ITERATIONS = 10
 
 # Noise level for the data

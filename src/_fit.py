@@ -14,13 +14,41 @@ from sklearn.metrics import mean_squared_error
 from pysindy.differentiation import FiniteDifference
 from pysindy.optimizers import STLSQ
 
-from commons import DATA_DIR, OUTPUT_DIR, THRESHOLD, MAX_ITERATIONS, NOISE_LEVEL
+from commons import DATA_DIR, OUTPUT_DIR,THRESHOLD_MIN, THRESHOLD_MAX,NUMBER_OF_THRESHOLD_VALUES, MAX_ITERATIONS, NOISE_LEVEL
+
+def find_lowest_rmse_threshold(coefs, opt, model, threshold_scan, x_test, t_test):
+    dt = t_test[1] - t_test[0]
+    mse = np.zeros(len(threshold_scan))
+    for i in range(len(threshold_scan)):
+        opt.coef_ = coefs[i]
+        mse[i] = model.score(x_test, t=dt, metric=mean_squared_error)
+    lowest_rmse_index = np.argmin(mse)
+    return threshold_scan[lowest_rmse_index]
 
 def fit1(u: np.ndarray,
         t: np.ndarray) -> Tuple[ps.SINDy, ps.SINDy, np.ndarray, np.ndarray]:
     """Uses PySINDy to find the equation that best fits the data u. Includes using derivatives of equations
     """
-    optimizer = STLSQ(threshold=THRESHOLD, max_iter=MAX_ITERATIONS)
+
+    threshold_scan = np.linspace(THRESHOLD_MIN, THRESHOLD_MAX, NUMBER_OF_THRESHOLD_VALUES)
+    coefs = []
+
+    for i, threshold in enumerate(threshold_scan):
+        sparse_regression_optimizer = ps.STLSQ(threshold=threshold)
+        differentiation_method = FiniteDifference()
+        y = u[:, 1:2]
+        ydot = udot[:, 1:2]
+        datay = np.hstack((y, ydot))
+        modely = ps.SINDy(optimizer=optimizer,
+                        differentiation_method=differentiation_method,
+                        feature_names=["y", "ydot"],
+                        discrete_time=False)
+        modely.fit(datay, t=t, ensemble=True)
+        coefs.append(modely.coefficients())
+
+    lowest_rmse_threshold = find_lowest_rmse_threshold(coefs, sparse_regression_optimizer, modely, threshold_scan, u, t)
+          
+    optimizer = STLSQ(threshold= lowest_rmse_threshold, max_iter=MAX_ITERATIONS)
     differentiation_method = FiniteDifference()
     # pylint: disable=protected-access
     udot = differentiation_method._differentiate(u, t)
@@ -70,12 +98,32 @@ def fit2(u: np.ndarray,
         t: np.ndarray) -> Tuple[ps.SINDy, np.ndarray, np.ndarray, np.ndarray]:
     """Uses PySINDy to find the equation that best fits the data u. Does not use derivatives of equations. 
     """
-    optimizer = STLSQ(threshold=THRESHOLD, max_iter=MAX_ITERATIONS)
-    differentiation_method = FiniteDifference()
-    
     xdot = u[:, 0:1]
     ydot = u[:, 1:2]
     zdot = u[:, 2:3]
+    data_all = np.hstack((u, xdot, ydot, zdot))
+
+    threshold_scan = np.linspace(THRESHOLD_MIN, THRESHOLD_MAX, NUMBER_OF_THRESHOLD_VALUES)
+    coefs = []
+
+    for i, threshold in enumerate(threshold_scan):
+        sparse_regression_optimizer = ps.STLSQ(threshold=threshold)
+        differentiation_method = FiniteDifference()
+
+        # Combine the data for all dimensions (x, y, and z)
+        data_all = np.hstack((u, xdot, ydot, zdot))
+        # Fit the model using pysindy
+        model_all = ps.SINDy(optimizer=sparse_regression_optimizer,
+                            differentiation_method=differentiation_method,
+                            feature_names=["x", "xdot", "y", "ydot", "z", "zdot"],
+                            discrete_time=False)
+        model_all.fit(data_all, t=t, ensemble=True)
+        coefs.append(model_all.coefficients())
+
+    lowest_rmse_threshold = find_lowest_rmse_threshold(coefs, sparse_regression_optimizer, model_all, threshold_scan, data_all, t)
+
+    optimizer = STLSQ(threshold=lowest_rmse_threshold, max_iter=MAX_ITERATIONS)
+    differentiation_method = FiniteDifference()
 
     # Combine the data for all dimensions (x, y, and z)
     data_all = np.hstack((u, xdot, ydot, zdot))
