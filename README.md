@@ -49,3 +49,8 @@ python3 _fit.py
 ```
 python3 _predict.py
 ```
+
+Or within the src folder, run the shellscript 
+```
+./run_scripts.sh
+```
