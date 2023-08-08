@@ -19,6 +19,7 @@ NOISE_LEVEL = 0.02
 # Constants for the projectile motion problem
 dt = 0.1 # Time step (s)
 TIME_OF_DATA = 6
+WINDOW_SIZE = 2 # data taken into account for prediction
 PREDICTION_TIME = 1
 
 # starting point of ball 
