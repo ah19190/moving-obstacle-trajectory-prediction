@@ -1,5 +1,4 @@
 """Predicts a trajectory using the SINDy model."""
-# TODO: now this does not find the smallest threshold, it is always 0.01
 
 import argparse
 import logging

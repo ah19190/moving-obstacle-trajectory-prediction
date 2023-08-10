@@ -1,5 +1,5 @@
 "Constants and common code."
-
+# TODO: Get this to recalculate the model every 0.5 seconds, based on the last 2 seconds of trajectory 
 from pathlib import Path
 
 # Directory names.
@@ -19,8 +19,9 @@ NOISE_LEVEL = 0.02
 # Constants for the projectile motion problem
 dt = 0.1 # Time step (s)
 TIME_OF_DATA = 6
-WINDOW_SIZE = 2 # data taken into account for prediction
 PREDICTION_TIME = 1
+WINDOW_SIZE = 2 # data taken into account for prediction
+PREDICTION_FREQUENCY = 0.5 # how often to predict (in seconds)
 
 # starting point of ball 
 x0 = 40
@@ -30,3 +31,5 @@ z0 = 10
 # Initial conditions
 v0 = 30  # Initial velocity (m/s)
 launch_angle = 30  # Launch angle in degrees
+
+
