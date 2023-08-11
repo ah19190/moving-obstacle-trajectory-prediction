@@ -14,7 +14,7 @@ NUMBER_OF_THRESHOLD_VALUES = 11
 MAX_ITERATIONS = 10
 
 # Noise level for the data
-NOISE_LEVEL = 0.02
+NOISE_LEVEL = 0.00
 
 # Constants for the projectile motion problem
 dt = 0.1 # Time step (s)

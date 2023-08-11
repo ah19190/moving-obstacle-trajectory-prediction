@@ -12,7 +12,7 @@ import numpy as np
 from IPython import get_ipython
 
 from commons import DATA_DIR, OUTPUT_DIR, TIME_OF_DATA, PREDICTION_TIME, dt
-from utils_graph import graph_result, three_d_graph_result
+from utils_graph import three_d_graph_result
 
 # Initialize integrator keywords for solve_ivp to replicate the odeint defaults
 integrator_keywords = {}

@@ -135,7 +135,7 @@ def fit2(u: np.ndarray,
                         feature_names=["x", "xdot", "y", "ydot", "z", "zdot"],
                         discrete_time=False)
     model_all.fit(data_all, t=t, ensemble=True)
-    # model_all.print() # comment this out if you do not want the model printed to terminal 
+    model_all.print() # comment this out if you do not want the model printed to terminal 
 
     return (model_all, xdot, ydot, zdot)
 
@@ -147,14 +147,19 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
     parser.add_argument("--output_dir", dest="output_dir", default=OUTPUT_DIR)
+    parser.add_argument("--use_coordinate_data", action="store_true", help="Use coordinate and t_test data instead of u and t")
     args = parser.parse_args()
     data_dir = args.data_dir
     output_dir = args.output_dir
 
     data_file_dir = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_dir, "r") as file_read:
-        u = np.array(file_read.get("u"))
-        t = np.array(file_read.get("t"))
+        if args.use_coordinate_data:
+            u = np.array(file_read.get("coordinate"))
+            t = np.array(file_read.get("t_test"))
+        else:
+            u = np.array(file_read.get("u"))
+            t = np.array(file_read.get("t"))
 
     # add noise to the data using rmse
     rmse = mean_squared_error(u, np.zeros((u).shape), squared=False)

@@ -8,13 +8,21 @@ import time
 
 from commons import WINDOW_SIZE, PREDICTION_FREQUENCY, PREDICTION_TIME 
 
-def main()-> None:
-    
-    
-    
+import subprocess
 
+def run_import_real_data_script():
+    command = ["python3", "import_real_data.py"]
+    subprocess.run(command)
 
+def run_fit_script(use_coordinate_data=False):
+    command = ["python3", "_fit.py"]
+    if use_coordinate_data:
+        command.append("--use_coordinate_data")
+    subprocess.run(command)
 
+def main():
+    run_import_real_data_script()
+    run_fit_script(use_coordinate_data=True)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

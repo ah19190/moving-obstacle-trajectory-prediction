@@ -7,7 +7,8 @@ import logging
 import h5py
 import numpy as np
 
-from commons import ORIGINAL_DATA_DIR, DATA_DIR 
+from commons import ORIGINAL_DATA_DIR, DATA_DIR
+
 
 
 # load the data from the csv file using genfromtxt and store it in a numpy array
@@ -15,9 +16,8 @@ def load_data():
     """
     This is a function that load the data from the csv file using genfromtxt and store it in a numpy array
 
-    :param arg1: The first argument.
-    :param arg2: The second argument.
-    :return: The result of the operation.
+    :return coordinates: The coordinates of the drone
+    :return t: The time of the drone
     """
     data = np.genfromtxt('../original-data/drone_trajectory_data.csv', delimiter=',', skip_header=1, dtype=float)
     coordinates = data[:, 1:4]
@@ -41,8 +41,7 @@ def main()-> None:
     data_file_path = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_path, "w") as file:
         file.create_dataset(name="coordinate", data=coordinates)
-        file.create_dataset(name="t_test", data=t_test)  
-
+        file.create_dataset(name="t_test", data=t_test) 
 
 if __name__ == '__main__':
     # logging.info("parsing drone data.")
