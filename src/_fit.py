@@ -136,14 +136,15 @@ def fit2(u: np.ndarray,
                         feature_names=["x", "xdot", "y", "ydot", "z", "zdot"],
                         discrete_time=False)
     model_all.fit(data_all, t=t, ensemble=True, quiet=True)
+    # model_all.print()
     # ensemble_coefs = model_all.coef_list
 
     ensemble_coefs = np.asarray(model_all.coef_list)
     median_ensemble_coefs = np.median(ensemble_coefs, axis=0) # get the median of each coefficient
+    optimizer.coef_ = median_ensemble_coefs # set the coefficients to the median of the ensemble coefficients
+    model_all.optimizer = optimizer # Reinitialize the optimizer with the updated coefficients
 
-    model_all.coef_ = median_ensemble_coefs # set the coefficients to the median of the ensemble coefficients
     # model_all.print() # comment this out if you do not want the model printed to terminal 
-    
     return (model_all, xdot, ydot, zdot)
 
 
