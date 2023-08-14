@@ -25,6 +25,7 @@ def find_lowest_rmse_threshold(coefs, opt, model, threshold_scan, x_test, t_test
         opt.coef_ = coefs[i]
         mse[i] = model.score(x_test, t=dt, metric=mean_squared_error)
     lowest_rmse_index = np.argmin(mse)
+    print("lowest rmse index: ", lowest_rmse_index)
     return threshold_scan[lowest_rmse_index]
 
 
@@ -121,7 +122,7 @@ def fit2(u: np.ndarray,
                             discrete_time=False)
         model_all.fit(data_all, t=t, quiet=True) # ensemble here would cause the coefs to be similar for all thresholds
         coefs.append(model_all.coefficients())
-
+    # print("coefs: ", coefs)
     lowest_rmse_threshold = find_lowest_rmse_threshold(coefs, sparse_regression_optimizer, model_all, threshold_scan, data_all, t)
 
     optimizer = STLSQ(threshold=lowest_rmse_threshold, max_iter=MAX_ITERATIONS)
@@ -134,9 +135,15 @@ def fit2(u: np.ndarray,
                         differentiation_method=differentiation_method,
                         feature_names=["x", "xdot", "y", "ydot", "z", "zdot"],
                         discrete_time=False)
-    model_all.fit(data_all, t=t, ensemble=True)
-    model_all.print() # comment this out if you do not want the model printed to terminal 
+    model_all.fit(data_all, t=t, ensemble=True, quiet=True)
+    # ensemble_coefs = model_all.coef_list
 
+    ensemble_coefs = np.asarray(model_all.coef_list)
+    median_ensemble_coefs = np.median(ensemble_coefs, axis=0) # get the median of each coefficient
+
+    model_all.coef_ = median_ensemble_coefs # set the coefficients to the median of the ensemble coefficients
+    # model_all.print() # comment this out if you do not want the model printed to terminal 
+    
     return (model_all, xdot, ydot, zdot)
 
 

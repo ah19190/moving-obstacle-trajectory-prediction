@@ -1,0 +1,21 @@
+Issues to be resolved + investigated: 
+
+1. rmse index is always 0, due to the fact that the coefficients seem to always be the same across all the thresholds
+Idea: Is this caused by the fact that because I use ensemble, the last model is saved instead of the median? 
+so currently i am able to get it to choose not just the index 0, but have seen index 1 and 2 
+so maybe it is not an issue for now. 
+lsoda--  warning..internal t (=r1) and h (=r2) are
+       such that in the machine, t + h = t on the next step 
+I get this warning when the hyperparameter is too low, so how do i generalize my code to choose this hyperparameter? 
+
+2. How do I use the median ensemble coefficients instead of the last fitted model? My calculations seem to be getting worse if I use this compared to before
+# TODO: how do i use the ensemble coefficients instead of the last model coefficients and pass it to my predict model 
+
+Features that I need to implement: 
+- Modularize code further so this can run on different type of data inputs (now it is very adapted to just projectile)
+- Take in window of data and predict only 1 or less second of future trajectory 
+- Continuous prediction every 0.5 seconds using a while loop 
+
+After implementing features:
+- test on real data, start to quantify accuracy 
+
