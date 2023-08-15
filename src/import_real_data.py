@@ -7,7 +7,7 @@ import logging
 import h5py
 import numpy as np
 
-from commons import ORIGINAL_DATA_DIR, DATA_DIR
+from commons import ORIGINAL_DATA_DIR, DATA_DIR, TRAJECTORY_DATA_FILE
 
 
 
@@ -19,7 +19,7 @@ def load_data():
     :return coordinates: The coordinates of the drone
     :return t: The time of the drone
     """
-    data = np.genfromtxt('../original-data/drone_trajectory_data.csv', delimiter=',', skip_header=1, dtype=float)
+    data = np.genfromtxt(TRAJECTORY_DATA_FILE, delimiter=',', skip_header=1, dtype=float)
     coordinates = data[:, 1:4]
     t = data[:, 0]
 
