@@ -9,8 +9,6 @@ import numpy as np
 
 from commons import ORIGINAL_DATA_DIR, DATA_DIR, TRAJECTORY_DATA_FILE
 
-
-
 # load the data from the csv file using genfromtxt and store it in a numpy array
 def load_data():
     """
@@ -20,11 +18,10 @@ def load_data():
     :return t: The time of the drone
     """
     data = np.genfromtxt(TRAJECTORY_DATA_FILE, delimiter=',', skip_header=1, dtype=float)
-    coordinates = data[:, 1:4]
+    coordinate_data = data[:, 1:4]
     t = data[:, 0]
 
-    return coordinates, t
-
+    return coordinate_data, t
 
 def main()-> None:
     # logging.info("parsing drone data.")
@@ -36,12 +33,12 @@ def main()-> None:
     args = parser.parse_args()
     data_dir = args.data_dir
 
-    coordinates, t_test = load_data() 
+    coordinate_data, t = load_data() 
 
     data_file_path = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_path, "w") as file:
-        file.create_dataset(name="coordinate", data=coordinates)
-        file.create_dataset(name="t_test", data=t_test) 
+        file.create_dataset(name="coordinate_data", data=coordinate_data)
+        file.create_dataset(name="t", data=t) 
 
 if __name__ == '__main__':
     # logging.info("parsing drone data.")

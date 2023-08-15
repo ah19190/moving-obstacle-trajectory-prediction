@@ -34,11 +34,19 @@ def main() -> None:
 
     data_file_path = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_path, "r") as file_read:
-        u = np.array(file_read.get("u"))
+        coordinate_data = np.array(file_read.get("coordinate_data"))
         t = np.array(file_read.get("t"))
-        u_ground_truth = np.array(file_read.get("u_ground_truth"))
-        t_ground_truth = np.array(file_read.get("t_ground_truth"))
+        # u_ground_truth = np.array(file_read.get("u_ground_truth"))
+        # t_ground_truth = np.array(file_read.get("t_ground_truth"))
     
+    # save the whole data as ground truth
+    coordinate_data_ground_truth = coordinate_data
+    t_ground_truth = t
+
+    # Make u and t to only be for up to TIME_OF_DATA
+    coordinate_data = coordinate_data[:int(TIME_OF_DATA/dt)]
+    t = t[:int(TIME_OF_DATA/dt)]
+
     models_file_path = Path(output_dir, "models.pkl")
     with open(models_file_path, "rb") as file_read:
         (model_all) = pickle.load(file_read)
@@ -53,17 +61,17 @@ def main() -> None:
     t_predict = np.arange(TIME_OF_DATA , TIME_OF_DATA + PREDICTION_TIME, dt) # predict the next PREDICTION_TIME seconds of data
 
     # Predict the trajectory of the ball using the model
-    u0_all = np.hstack((u[-1], xdot[-1], ydot[-1], zdot[-1])) #use u here instead of u_noise as we want it to start from same starting point
-    u_approximation_all = model_all.simulate(u0_all, t_predict)
+    u0_all = np.hstack((coordinate_data[-1], xdot[-1], ydot[-1], zdot[-1]))
+    coordinate_data_approximation_all = model_all.simulate(u0_all, t_predict)
 
     # Reshape the predictions into separate arrays for each dimension
-    u_approximation_x = u_approximation_all[:, :1]
-    u_approximation_y = u_approximation_all[:, 1:2]
-    u_approximation_z = u_approximation_all[:, 2:3]
+    coordinate_data_approximation_x = coordinate_data_approximation_all[:, :1]
+    coordinate_data_approximation_y = coordinate_data_approximation_all[:, 1:2]
+    coordinate_data_approximation_z = coordinate_data_approximation_all[:, 2:3]
 
-    # graph_result(u_ground_truth, u_approximation_x, u_approximation_y, u_approximation_z, t_ground_truth)
+    # graph_result(coordinate_data_ground_truth, coordinate_data_approximation_x, coordinate_data_approximation_y, coordinate_data_approximation_z, t_ground_truth)
 
-    three_d_graph_result(u_ground_truth, u_approximation_x, u_approximation_y, u_approximation_z, t_ground_truth)
+    three_d_graph_result(coordinate_data_ground_truth, coordinate_data_approximation_x, coordinate_data_approximation_y, coordinate_data_approximation_z, t_ground_truth)
 
 
 if __name__ == "__main__":

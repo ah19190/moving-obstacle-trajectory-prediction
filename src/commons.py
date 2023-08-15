@@ -1,5 +1,4 @@
 "Constants and common code."
-# TODO: Get this to recalculate the model every 0.5 seconds, based on the last 2 seconds of trajectory 
 from pathlib import Path
 
 # Directory names.

@@ -161,18 +161,14 @@ def main() -> None:
 
     data_file_dir = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_dir, "r") as file_read:
-        if args.use_coordinate_data:
-            u = np.array(file_read.get("coordinate"))
-            t = np.array(file_read.get("t_test"))
-        else:
-            u = np.array(file_read.get("u"))
-            t = np.array(file_read.get("t"))
+        coordinate_data = np.array(file_read.get("coordinate_data"))
+        t = np.array(file_read.get("t"))
 
     # add noise to the data using rmse
-    rmse = mean_squared_error(u, np.zeros((u).shape), squared=False)
-    u_noise = u + np.random.normal(0, rmse * NOISE_LEVEL, u.shape)  # Add noise
+    rmse = mean_squared_error(coordinate_data, np.zeros((coordinate_data).shape), squared=False)
+    coordinate_data_noise = coordinate_data + np.random.normal(0, rmse * NOISE_LEVEL, coordinate_data.shape)  # Add noise
 
-    (model_all, xdot, ydot, zdot) = fit2(u_noise, t) # base case we are using fit 2 for now
+    (model_all, xdot, ydot, zdot) = fit2(coordinate_data_noise, t) # base case we are using fit 2 for now
 
     Path(output_dir).mkdir(exist_ok=True)
     output_file_dir = Path(output_dir, "models.pkl")
