@@ -10,20 +10,22 @@ OUTPUT_DIR = str(Path(Path(__file__).parent.parent, "output"))
 TRAJECTORY_DATA_FILE = "../original-data/drone_trajectory_data.csv"
 
 # STLSQ constants 
-THRESHOLD_MIN = 0.01
-THRESHOLD_MAX  = 0.2
+THRESHOLD_MIN = 0.1
+THRESHOLD_MAX  = 0.5
 NUMBER_OF_THRESHOLD_VALUES = 21
 MAX_ITERATIONS = 10
-
-# Noise level to add to the dat (use this for generated data with no noise)
-NOISE_LEVEL = 0.00
 
 # Constants for the projectile motion problem
 dt = 0.1 # Time step (s)
 TIME_OF_DATA = 6
 PREDICTION_TIME = 1
-WINDOW_SIZE = 2 # data taken into account for prediction
-PREDICTION_FREQUENCY = 0.5 # how often to predict (in seconds)
+WINDOW_SIZE = 4 # data taken into account for prediction
+
+# Constants for the drone problem
+PREDICTION_FREQUENCY = 0.5 # frequency of prediction (in seconds)
+
+# Noise level to add to the data (use this for generated data with no noise)
+NOISE_LEVEL = 0.02
 
 # starting point of ball 
 x0 = 40

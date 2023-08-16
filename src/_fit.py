@@ -15,7 +15,7 @@ from pysindy.differentiation import FiniteDifference
 from pysindy.optimizers import STLSQ
 import matplotlib.pyplot as plt
 
-from commons import DATA_DIR, OUTPUT_DIR,THRESHOLD_MIN, THRESHOLD_MAX,NUMBER_OF_THRESHOLD_VALUES, MAX_ITERATIONS, NOISE_LEVEL
+from commons import DATA_DIR, OUTPUT_DIR,THRESHOLD_MIN, THRESHOLD_MAX,NUMBER_OF_THRESHOLD_VALUES, MAX_ITERATIONS, NOISE_LEVEL, WINDOW_SIZE
 
 # Function to choose best algo hyperperameter lambda 
 def find_lowest_rmse_threshold(coefs, opt, model, threshold_scan, x_test, t_test):
@@ -150,11 +150,10 @@ def fit2(u: np.ndarray,
 def main() -> None:
     # logging.info("Fitting.")
 
-    # Get the u and t from projectile motion data
+    # Get the coordinate_data and t from projectile motion data
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
     parser.add_argument("--output_dir", dest="output_dir", default=OUTPUT_DIR)
-    parser.add_argument("--use_coordinate_data", action="store_true", help="Use coordinate and t_test data instead of u and t")
     args = parser.parse_args()
     data_dir = args.data_dir
     output_dir = args.output_dir
@@ -168,7 +167,11 @@ def main() -> None:
     rmse = mean_squared_error(coordinate_data, np.zeros((coordinate_data).shape), squared=False)
     coordinate_data_noise = coordinate_data + np.random.normal(0, rmse * NOISE_LEVEL, coordinate_data.shape)  # Add noise
 
-    (model_all, xdot, ydot, zdot) = fit2(coordinate_data_noise, t) # base case we are using fit 2 for now
+    # Select the window of time to use for fitting
+    t_window = t[t <= WINDOW_SIZE]
+    coordinate_data_noise_window = coordinate_data_noise[:len(t_window)]
+
+    (model_all, xdot, ydot, zdot) = fit2(coordinate_data_noise_window, t_window) # base case we are using fit 2 for now
 
     Path(output_dir).mkdir(exist_ok=True)
     output_file_dir = Path(output_dir, "models.pkl")

@@ -11,14 +11,14 @@ import h5py
 import numpy as np
 from IPython import get_ipython
 
-from commons import DATA_DIR, OUTPUT_DIR, TIME_OF_DATA, PREDICTION_TIME, dt
+from commons import DATA_DIR, OUTPUT_DIR, TIME_OF_DATA, PREDICTION_TIME, dt, WINDOW_SIZE
 from utils_graph import three_d_graph_result
 
-# Initialize integrator keywords for solve_ivp to replicate the odeint defaults
-integrator_keywords = {}
-integrator_keywords["rtol"] = 1e-12
-integrator_keywords["method"] = "LSODA"
-integrator_keywords["atol"] = 1e-12
+# # Initialize integrator keywords for solve_ivp to replicate the odeint defaults
+# integrator_keywords = {}
+# integrator_keywords["rtol"] = 1e-12
+# integrator_keywords["method"] = "LSODA"
+# integrator_keywords["atol"] = 1e-12
 
 def main() -> None:
     # logging.info("Predicting.")
@@ -36,16 +36,22 @@ def main() -> None:
     with h5py.File(data_file_path, "r") as file_read:
         coordinate_data = np.array(file_read.get("coordinate_data"))
         t = np.array(file_read.get("t"))
-        # u_ground_truth = np.array(file_read.get("u_ground_truth"))
-        # t_ground_truth = np.array(file_read.get("t_ground_truth"))
     
     # save the whole data as ground truth
     coordinate_data_ground_truth = coordinate_data
     t_ground_truth = t
 
-    # Make u and t to only be for up to TIME_OF_DATA
-    coordinate_data = coordinate_data[:int(TIME_OF_DATA/dt)]
-    t = t[:int(TIME_OF_DATA/dt)]
+    # # Make coordinate_data and t to only be for up to TIME_OF_DATA
+    # coordinate_data = coordinate_data[:int(TIME_OF_DATA/dt)]
+    # t = t[:int(TIME_OF_DATA/dt)]
+
+    # Select the window of time that was used for fitting only
+    t_fit = t[t <= WINDOW_SIZE]
+    coordinate_data_fit = coordinate_data[:len(t_fit)]
+
+    # Select the window of time that was used for fitting + PREDICTION_TIME seconds
+    t_window = t[t <= WINDOW_SIZE+ PREDICTION_TIME]
+    coordinate_data_window = coordinate_data[:len(t_window)]
 
     models_file_path = Path(output_dir, "models.pkl")
     with open(models_file_path, "rb") as file_read:
@@ -58,10 +64,11 @@ def main() -> None:
         zdot = np.array(file_read.get("zdot"))
 
     # Time points for the prediction
-    t_predict = np.arange(TIME_OF_DATA , TIME_OF_DATA + PREDICTION_TIME, dt) # predict the next PREDICTION_TIME seconds of data
+    # t_predict = np.arange(TIME_OF_DATA , TIME_OF_DATA + PREDICTION_TIME, dt) # predict the next PREDICTION_TIME seconds of data
+    t_predict = np.arange(WINDOW_SIZE , WINDOW_SIZE + PREDICTION_TIME, t_window[-1] - t_window[-2]) # predict the next PREDICTION_TIME seconds of data
 
     # Predict the trajectory of the ball using the model
-    u0_all = np.hstack((coordinate_data[-1], xdot[-1], ydot[-1], zdot[-1]))
+    u0_all = np.hstack((coordinate_data_fit[-1], xdot[-1], ydot[-1], zdot[-1])) # start point is the last data point of fit data
     coordinate_data_approximation_all = model_all.simulate(u0_all, t_predict)
 
     # Reshape the predictions into separate arrays for each dimension
@@ -71,7 +78,8 @@ def main() -> None:
 
     # graph_result(coordinate_data_ground_truth, coordinate_data_approximation_x, coordinate_data_approximation_y, coordinate_data_approximation_z, t_ground_truth)
 
-    three_d_graph_result(coordinate_data_ground_truth, coordinate_data_approximation_x, coordinate_data_approximation_y, coordinate_data_approximation_z, t_ground_truth)
+    # three_d_graph_result(coordinate_data_ground_truth, coordinate_data_approximation_x, coordinate_data_approximation_y, coordinate_data_approximation_z, t_ground_truth)
+    three_d_graph_result(coordinate_data_window, coordinate_data_approximation_x, coordinate_data_approximation_y, coordinate_data_approximation_z, t_window)
 
 
 if __name__ == "__main__":
