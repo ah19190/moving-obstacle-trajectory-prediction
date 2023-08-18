@@ -69,6 +69,11 @@ def fit1(u: np.ndarray,
                       discrete_time=False)
     modelx.fit(datax, t=t, ensemble=True)
     modelx.print()
+
+    ensemble_coefs_x = np.asarray(modelx.coef_list)
+    median_ensemble_coefs_x = np.median(ensemble_coefs_x, axis=0) # get the median of each coefficient
+    optimizer.coef_ = median_ensemble_coefs_x # set the coefficients to the median of the ensemble coefficients
+    modelx.optimizer = optimizer # Reinitialize the optimizer with the updated coefficients
     # logging.info("coefficients: %s", modelx.coefficients().T)
 
     # Get a model for the movement in y.
@@ -82,6 +87,11 @@ def fit1(u: np.ndarray,
                       discrete_time=False)
     modely.fit(datay, t=t, ensemble=True)
     modely.print()
+
+    ensemble_coefs_y = np.asarray(modely.coef_list)
+    median_ensemble_coefs_y = np.median(ensemble_coefs_y, axis=0) # get the median of each coefficient
+    optimizer.coef_ = median_ensemble_coefs_y # set the coefficients to the median of the ensemble coefficients
+    modely.optimizer = optimizer # Reinitialize the optimizer with the updated coefficients
     # logging.info("coefficients: %s", modely.coefficients().T)
 
     # Get a model for the movement in z.
@@ -95,6 +105,11 @@ def fit1(u: np.ndarray,
                       discrete_time=False)
     modelz.fit(dataz, t=t, ensemble=True)
     modelz.print()
+
+    ensemble_coefs_z = np.asarray(modelz.coef_list)
+    median_ensemble_coefs_z = np.median(ensemble_coefs_z, axis=0) # get the median of each coefficient
+    optimizer.coef_ = median_ensemble_coefs_z # set the coefficients to the median of the ensemble coefficients
+    modelz.optimizer = optimizer # Reinitialize the optimizer with the updated coefficients
     # logging.info("coefficients: %s", modelz.coefficients().T)
 
     return (modelx, modely, modelz, xdot, ydot, zdot)
