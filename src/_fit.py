@@ -40,22 +40,23 @@ def fit1(u: np.ndarray,
     for i, threshold in enumerate(threshold_scan):
         sparse_regression_optimizer = ps.STLSQ(threshold=threshold)
         differentiation_method = FiniteDifference()
+        udot = differentiation_method._differentiate(u, t)
         y = u[:, 1:2]
         ydot = udot[:, 1:2]
         datay = np.hstack((y, ydot))
-        modely = ps.SINDy(optimizer=optimizer,
+        modely = ps.SINDy(optimizer=sparse_regression_optimizer,
                         differentiation_method=differentiation_method,
                         feature_names=["y", "ydot"],
                         discrete_time=False)
         modely.fit(datay, t=t, ensemble=True)
         coefs.append(modely.coefficients())
 
-    lowest_rmse_threshold = find_lowest_rmse_threshold(coefs, sparse_regression_optimizer, modely, threshold_scan, u, t) 
+    lowest_rmse_threshold = find_lowest_rmse_threshold(coefs, sparse_regression_optimizer, modely, threshold_scan, datay, t) 
 
     optimizer = STLSQ(threshold= lowest_rmse_threshold, max_iter=MAX_ITERATIONS)
     differentiation_method = FiniteDifference()
-    # pylint: disable=protected-access
     udot = differentiation_method._differentiate(u, t)
+    # pylint: disable=protected-access
 
     # Get a model for the movement in x.
     # logging.info("Model for x")
@@ -171,13 +172,14 @@ def main() -> None:
     t_window = t[t <= WINDOW_SIZE]
     coordinate_data_noise_window = coordinate_data_noise[:len(t_window)]
 
-    (model_all, xdot, ydot, zdot) = fit2(coordinate_data_noise_window, t_window) # base case we are using fit 2 for now
+    # (model_all, xdot, ydot, zdot) = fit2(coordinate_data_noise_window, t_window) 
+    (modelx, modely, modelz, xdot, ydot, zdot) = fit1(coordinate_data_noise_window, t_window) # se fit 1 which calculates model separately for each dimension
 
     Path(output_dir).mkdir(exist_ok=True)
     output_file_dir = Path(output_dir, "models.pkl")
     with open(output_file_dir, "wb") as file:
-        # pickle.dump((modelx, modely), file)
-        pickle.dump(model_all, file)
+        pickle.dump((modelx, modely, modelz), file)
+        # pickle.dump(model_all, file)
 
     output_file_dir = Path(output_dir, "derivatives.hdf5")
     with h5py.File(output_file_dir, "w") as file:

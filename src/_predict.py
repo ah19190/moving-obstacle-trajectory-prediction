@@ -55,7 +55,8 @@ def main() -> None:
 
     models_file_path = Path(output_dir, "models.pkl")
     with open(models_file_path, "rb") as file_read:
-        (model_all) = pickle.load(file_read)
+        #(model_all) = pickle.load(file_read)
+        (modelx, modely, modelz) = pickle.load(file_read)
 
     derivatives_file_path = Path(output_dir, "derivatives.hdf5")
     with h5py.File(derivatives_file_path, "r") as file_read:
@@ -67,20 +68,37 @@ def main() -> None:
     # t_predict = np.arange(TIME_OF_DATA , TIME_OF_DATA + PREDICTION_TIME, dt) # predict the next PREDICTION_TIME seconds of data
     t_predict = np.arange(WINDOW_SIZE , WINDOW_SIZE + PREDICTION_TIME, t_window[-1] - t_window[-2]) # predict the next PREDICTION_TIME seconds of data
 
-    # Predict the trajectory of the ball using the model
-    u0_all = np.hstack((coordinate_data_fit[-1], xdot[-1], ydot[-1], zdot[-1])) # start point is the last data point of fit data
-    coordinate_data_approximation_all = model_all.simulate(u0_all, t_predict)
+    # Old approach where we predict all dimensions at once using fit2 
 
-    # Reshape the predictions into separate arrays for each dimension
-    coordinate_data_approximation_x = coordinate_data_approximation_all[:, :1]
-    coordinate_data_approximation_y = coordinate_data_approximation_all[:, 1:2]
-    coordinate_data_approximation_z = coordinate_data_approximation_all[:, 2:3]
+    # Predict the trajectory of the ball using the model
+    # u0_all = np.hstack((coordinate_data_fit[-1], xdot[-1], ydot[-1], zdot[-1])) # start point is the last data point of fit data
+    # coordinate_data_approximation_all = model_all.simulate(u0_all, t_predict)
+    
+    # # Reshape the predictions into separate arrays for each dimension
+    # coordinate_data_approximation_x = coordinate_data_approximation_all[:, :1]
+    # coordinate_data_approximation_y = coordinate_data_approximation_all[:, 1:2]
+    # coordinate_data_approximation_z = coordinate_data_approximation_all[:, 2:3]
 
     # graph_result(coordinate_data_ground_truth, coordinate_data_approximation_x, coordinate_data_approximation_y, coordinate_data_approximation_z, t_ground_truth)
 
     # three_d_graph_result(coordinate_data_ground_truth, coordinate_data_approximation_x, coordinate_data_approximation_y, coordinate_data_approximation_z, t_ground_truth)
-    three_d_graph_result(coordinate_data_window, coordinate_data_approximation_x, coordinate_data_approximation_y, coordinate_data_approximation_z, t_window)
+    # three_d_graph_result(coordinate_data_window, coordinate_data_approximation_x, coordinate_data_approximation_y, coordinate_data_approximation_z, t_window)
+    
+    # Newer approach where we predict each dimension separately
+    u0_x = np.hstack((coordinate_data_fit[-1, 0], xdot[-1])) # start point is the last data point of fit data
+    simulate_data_x = modelx.simulate(u0_x, t_predict)
+    
+    simulate_data_x = simulate_data_x[:, 0:1] # we only want the value of x coordinate, not xdot
 
+    u0_y = np.hstack((coordinate_data_fit[-1, 1], ydot[-1])) # start point is the last data point of fit data
+    simulate_data_y = modely.simulate(u0_y, t_predict)
+    simulate_data_y = simulate_data_y[:, 0:1] # we only want the value of y coordinate, not ydot
+
+    u0_z = np.hstack((coordinate_data_fit[-1, 2], zdot[-1])) # start point is the last data point of fit data
+    simulate_data_z = modelz.simulate(u0_z, t_predict)
+    simulate_data_z = simulate_data_z[:, 0:1] # we only want the value of z coordinate, not zdot
+    
+    three_d_graph_result(coordinate_data_window, simulate_data_x, simulate_data_y, simulate_data_z, t_window)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
