@@ -13,6 +13,7 @@ from commons import ORIGINAL_DATA_DIR, DATA_DIR, TRAJECTORY_DATA_FILE
 def load_data():
     """
     This is a function that load the data from the csv file using genfromtxt and store it in a numpy array
+    Data should be in the following format: time (in ms) , x, y, z
 
     :return coordinates: The coordinates of the drone
     :return t: The time of the drone

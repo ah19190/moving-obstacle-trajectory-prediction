@@ -10,13 +10,19 @@ so maybe it is not an issue for now.
 # TODO: how do i use the ensemble coefficients instead of the last model coefficients and pass it to my predict model 
 Have added the calculation of the median coefficient and ensured the optimizer is reinitialised with it 
 
-3. My prediction seems to be wildly inaccurate for certain combinations PREDICTION_TIME and WINDOW_SIZE
-- the prediction will be completely off. I believe it is due to overfitting 
+3. My model now cannot handle any noise in the data, it will send warning and abort
 
 4. Warning 
 lsoda--  warning..internal t (=r1) and h (=r2) are
        such that in the machine, t + h = t on the next step 
 I get this warning when the hyperparameter is too low, so how do i generalize my code to choose this hyperparameter? 
+
+TODO
+
+1. Figure out why code cannot handle noise 
+
+2. Get code to be able to identify specific window of time it wants to take in, and predict 
+- currently it goes from t = 0 to whatever window you specify 
 
 Features that I need to implement: 
 - Modularize code further so this can run on different type of data inputs (currently _fit.py is generalized, but _predict.py is quite specific)
@@ -28,5 +34,3 @@ Features that I need to implement:
 After implementing features:
 - test on real data, start to quantify accuracy 
 
-Current Step:
-- make it run on the ball data for a window 

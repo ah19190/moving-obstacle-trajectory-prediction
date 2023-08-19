@@ -31,7 +31,8 @@ def find_lowest_rmse_threshold(coefs, opt, model, threshold_scan, x_test, t_test
 
 def fit1(u: np.ndarray,
         t: np.ndarray) -> Tuple[ps.SINDy, ps.SINDy, np.ndarray, np.ndarray]:
-    """Uses PySINDy to find the equation that best fits the data u. Includes using derivatives of equations
+    """Uses PySINDy to find the equation that best fits the data u. Includes using derivatives of equations. 
+       Here each coordinate x, y, and z is fit separately.
     """
 
     threshold_scan = np.linspace(THRESHOLD_MIN, THRESHOLD_MAX, NUMBER_OF_THRESHOLD_VALUES)

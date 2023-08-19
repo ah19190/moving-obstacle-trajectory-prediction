@@ -16,10 +16,10 @@ NUMBER_OF_THRESHOLD_VALUES = 11
 MAX_ITERATIONS = 10
 
 # Constants for the projectile motion problem
-dt = 0.1 # Time step (s)
+dt = 0.01 # Time step (s)
 TIME_OF_DATA = 6
-PREDICTION_TIME = 1
-WINDOW_SIZE = 5 # data taken into account for prediction
+PREDICTION_TIME = 0.2
+WINDOW_SIZE = 2 # data taken into account for prediction
 
 # Constants for the drone problem
 PREDICTION_FREQUENCY = 0.5 # frequency of prediction (in seconds)
