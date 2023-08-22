@@ -1,4 +1,4 @@
-"""Predicts a trajectory using the SINDy model."""
+"""Predicts a trajectory using the SINDy model. This version does not include any derivative of x, y, z."""
 
 import argparse
 import logging
@@ -43,32 +43,26 @@ def fit1(u: np.ndarray,
         differentiation_method = FiniteDifference()
         udot = differentiation_method._differentiate(u, t)
         y = u[:, 1:2]
-        ydot = udot[:, 1:2]
-        datay = np.hstack((y, ydot))
         modely = ps.SINDy(optimizer=sparse_regression_optimizer,
                         differentiation_method=differentiation_method,
-                        feature_names=["y", "ydot"],
+                        feature_names=["y"],
                         discrete_time=False)
-        modely.fit(datay, t=t, ensemble=True)
+        modely.fit(y, t=t, ensemble=True)
         coefs.append(modely.coefficients())
 
-    lowest_rmse_threshold = find_lowest_rmse_threshold(coefs, sparse_regression_optimizer, modely, threshold_scan, datay, t) 
+    lowest_rmse_threshold = find_lowest_rmse_threshold(coefs, sparse_regression_optimizer, modely, threshold_scan, y, t) 
 
     optimizer = STLSQ(threshold= lowest_rmse_threshold, max_iter=MAX_ITERATIONS)
     differentiation_method = FiniteDifference()
-    udot = differentiation_method._differentiate(u, t)
-    # pylint: disable=protected-access
 
     # Get a model for the movement in x.
     # logging.info("Model for x")
     x = u[:, 0:1]
-    xdot = udot[:, 0:1]
-    datax = np.hstack((x, xdot))
     modelx = ps.SINDy(optimizer=optimizer,
                       differentiation_method=differentiation_method,
-                      feature_names=["x", "xdot"],
+                      feature_names=["x"],
                       discrete_time=False)
-    modelx.fit(datax, t=t, ensemble=True)
+    modelx.fit(x, t=t, ensemble=True)
     modelx.print()
 
     ensemble_coefs_x = np.asarray(modelx.coef_list)
@@ -80,13 +74,11 @@ def fit1(u: np.ndarray,
     # Get a model for the movement in y.
     # logging.info("Model for y")
     y = u[:, 1:2]
-    ydot = udot[:, 1:2]
-    datay = np.hstack((y, ydot))
     modely = ps.SINDy(optimizer=optimizer,
                       differentiation_method=differentiation_method,
-                      feature_names=["y", "ydot"],
+                      feature_names=["y"],
                       discrete_time=False)
-    modely.fit(datay, t=t, ensemble=True)
+    modely.fit(y, t=t, ensemble=True)
     modely.print()
 
     ensemble_coefs_y = np.asarray(modely.coef_list)
@@ -98,13 +90,11 @@ def fit1(u: np.ndarray,
     # Get a model for the movement in z.
     # logging.info("Model for z")
     z = u[:, 2:3]
-    zdot = udot[:, 2:3]
-    dataz = np.hstack((z, zdot))
     modelz = ps.SINDy(optimizer=optimizer,
                       differentiation_method=differentiation_method,
-                      feature_names=["z", "zdot"],
+                      feature_names=["z"],
                       discrete_time=False)
-    modelz.fit(dataz, t=t, ensemble=True)
+    modelz.fit(z, t=t, ensemble=True)
     modelz.print()
 
     ensemble_coefs_z = np.asarray(modelz.coef_list)
@@ -113,7 +103,7 @@ def fit1(u: np.ndarray,
     modelz.optimizer = optimizer # Reinitialize the optimizer with the updated coefficients
     # logging.info("coefficients: %s", modelz.coefficients().T)
 
-    return (modelx, modely, modelz, xdot, ydot, zdot)
+    return (modelx, modely, modelz)
 
 # Function to fit the best model using PySINDy
 def fit2(u: np.ndarray,
@@ -186,19 +176,13 @@ def main() -> None:
     coordinate_data_noise_window = coordinate_data_noise[:len(t_window)]
 
     # (model_all, xdot, ydot, zdot) = fit2(coordinate_data_noise_window, t_window) 
-    (modelx, modely, modelz, xdot, ydot, zdot) = fit1(coordinate_data_noise_window, t_window) # se fit 1 which calculates model separately for each dimension
+    (modelx, modely, modelz) = fit1(coordinate_data_noise_window, t_window) # se fit 1 which calculates model separately for each dimension
 
     Path(output_dir).mkdir(exist_ok=True)
     output_file_dir = Path(output_dir, "models.pkl")
     with open(output_file_dir, "wb") as file:
         pickle.dump((modelx, modely, modelz), file)
         # pickle.dump(model_all, file)
-
-    output_file_dir = Path(output_dir, "derivatives.hdf5")
-    with h5py.File(output_file_dir, "w") as file:
-        file.create_dataset(name="xdot", data=xdot)
-        file.create_dataset(name="ydot", data=ydot)
-        file.create_dataset(name="zdot", data=zdot) 
 
 if __name__ == "__main__":
     main()

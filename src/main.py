@@ -35,13 +35,20 @@ def main():
     with h5py.File(data_file_dir, "r") as file_read:
         t = np.array(file_read.get("t"))
 
-    # Get the max time of t
-    max_time = int(t[-1])
+    command = ["python3", "_fit.py"]
+    subprocess.run(command)
 
-    # Run the fit script for every PREDICTION_FREQUENCY seconds of data
-    for i in range(0, max_time, PREDICTION_FREQUENCY):
-        run_fit_script(i)
-        # run_predict_script(i)
+    command = ["python3", "_predict.py"]
+    subprocess.run(command)
+
+    # This part is for when i want to do continuous data generation
+    # # Get the max time of t
+    # max_time = int(t[-1])
+
+    # # Run the fit script for every PREDICTION_FREQUENCY seconds of data
+    # for i in range(0, max_time, PREDICTION_FREQUENCY):
+    #     run_fit_script(i)
+    #     # run_predict_script(i)
 
 if __name__ == "__main__":
     main()

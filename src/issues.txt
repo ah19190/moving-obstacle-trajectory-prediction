@@ -17,6 +17,8 @@ lsoda--  warning..internal t (=r1) and h (=r2) are
        such that in the machine, t + h = t on the next step 
 I get this warning when the hyperparameter is too low, so how do i generalize my code to choose this hyperparameter? 
 
+Maybe i can try to not calculate the derivative and just do x, y, z? 
+
 TODO
 
 1. Figure out why code cannot handle noise 

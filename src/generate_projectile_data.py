@@ -40,15 +40,6 @@ def main() -> None:
     args = parser.parse_args()
     data_dir = args.data_dir
 
-    # Time points for the trajectory
-    # t = np.arange(0, TIME_OF_DATA, dt)
-    # Time points for the prediction
-    # t_ground_truth = np.arange(0, TIME_OF_DATA + PREDICTION_TIME, dt) # predict the next PREDICTION_TIME seconds of data
-
-    # Calculate the projectile motion
-    # u = projectile_motion(v0, launch_angle, t).T
-    # u_ground_truth = projectile_motion(v0, launch_angle, t_ground_truth).T
-
     # Calculate the projectile motion 
     t = np.arange(0, TIME_OF_DATA + PREDICTION_TIME, dt) # predict the next PREDICTION_TIME seconds of data
     coordinate_data = projectile_motion(v0, launch_angle, t).T
@@ -62,8 +53,6 @@ def main() -> None:
         file.create_dataset(name="coordinate_data", data=coordinate_data)
         file.create_dataset(name="coordinate_data_noise", data=coordinate_data_noise)
         file.create_dataset(name="t", data=t)
-        # file.create_dataset(name="t_ground_truth", data=t_ground_truth)
-        # file.create_dataset(name="u_ground_truth", data=u_ground_truth)
 
 if __name__ == "__main__":
     main()
