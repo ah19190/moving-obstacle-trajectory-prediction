@@ -6,8 +6,9 @@ import logging
 
 import h5py
 import numpy as np
+from sklearn.metrics import mean_squared_error
 
-from commons import ORIGINAL_DATA_DIR, DATA_DIR, TRAJECTORY_DATA_FILE
+from commons import ORIGINAL_DATA_DIR, DATA_DIR, TRAJECTORY_DATA_FILE, NOISE_LEVEL
 
 # load the data from the csv file using genfromtxt and store it in a numpy array
 def load_data():
@@ -36,9 +37,14 @@ def main()-> None:
 
     coordinate_data, t = load_data() 
 
+    # add noise to the data using rmse
+    rmse = mean_squared_error(coordinate_data, np.zeros((coordinate_data).shape), squared=False)
+    coordinate_data_noise = coordinate_data + np.random.normal(0, rmse * NOISE_LEVEL, coordinate_data.shape)  # Add noise
+
     data_file_path = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_path, "w") as file:
         file.create_dataset(name="coordinate_data", data=coordinate_data)
+        file.create_dataset(name="coordinate_data_noise", data=coordinate_data_noise)
         file.create_dataset(name="t", data=t) 
 
 if __name__ == '__main__':

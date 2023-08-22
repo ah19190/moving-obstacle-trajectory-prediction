@@ -18,22 +18,22 @@ MAX_ITERATIONS = 10
 # Constants for the projectile motion problem
 dt = 0.01 # Time step (s)
 TIME_OF_DATA = 6
-PREDICTION_TIME = 0.2
-WINDOW_SIZE = 2 # data taken into account for prediction
+PREDICTION_TIME = 1.0
+WINDOW_SIZE = 6 # data taken into account for prediction
 
 # Constants for the drone problem
 PREDICTION_FREQUENCY = 0.5 # frequency of prediction (in seconds)
 
 # Noise level to add to the data (use this for generated data with no noise)
-NOISE_LEVEL = 0.00
+NOISE_LEVEL = 0.01
 
 # starting point of ball 
-x0 = 40
-y0 = 20
-z0 = 30
+x0 = 00
+y0 = 00
+z0 = 00
 
 # Initial conditions
-v0 = 40  # Initial velocity (m/s)
+v0 = 10  # Initial velocity (m/s)
 launch_angle = 30  # Launch angle in degrees
 
 

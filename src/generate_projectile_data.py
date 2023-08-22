@@ -7,7 +7,10 @@ import logging
 import h5py
 import numpy as np 
 
-from commons import ORIGINAL_DATA_DIR, DATA_DIR, TIME_OF_DATA, PREDICTION_TIME, dt, x0, y0, z0, v0, launch_angle
+from sklearn.metrics import mean_squared_error
+
+
+from commons import ORIGINAL_DATA_DIR, DATA_DIR, TIME_OF_DATA, PREDICTION_TIME, NOISE_LEVEL, dt, x0, y0, z0, v0, launch_angle
 
 # Constants 
 g = 9.81  # Acceleration due to gravity (m/s^2)
@@ -50,9 +53,14 @@ def main() -> None:
     t = np.arange(0, TIME_OF_DATA + PREDICTION_TIME, dt) # predict the next PREDICTION_TIME seconds of data
     coordinate_data = projectile_motion(v0, launch_angle, t).T
 
+    # add noise to the data using rmse
+    rmse = mean_squared_error(coordinate_data, np.zeros((coordinate_data).shape), squared=False)
+    coordinate_data_noise = coordinate_data + np.random.normal(0, rmse * NOISE_LEVEL, coordinate_data.shape)  # Add noise
+
     data_file_path = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_path, "w") as file:
         file.create_dataset(name="coordinate_data", data=coordinate_data)
+        file.create_dataset(name="coordinate_data_noise", data=coordinate_data_noise)
         file.create_dataset(name="t", data=t)
         # file.create_dataset(name="t_ground_truth", data=t_ground_truth)
         # file.create_dataset(name="u_ground_truth", data=u_ground_truth)

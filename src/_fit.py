@@ -32,7 +32,7 @@ def find_lowest_rmse_threshold(coefs, opt, model, threshold_scan, x_test, t_test
 def fit1(u: np.ndarray,
         t: np.ndarray) -> Tuple[ps.SINDy, ps.SINDy, np.ndarray, np.ndarray]:
     """Uses PySINDy to find the equation that best fits the data u. Includes using derivatives of equations. 
-       Here each coordinate x, y, and z is fit separately.
+       Here each coordinate x, y, and z is fitted separately.
     """
 
     threshold_scan = np.linspace(THRESHOLD_MIN, THRESHOLD_MAX, NUMBER_OF_THRESHOLD_VALUES)
@@ -119,6 +119,7 @@ def fit1(u: np.ndarray,
 def fit2(u: np.ndarray,
         t: np.ndarray) -> Tuple[ps.SINDy, np.ndarray, np.ndarray, np.ndarray]:
     """Uses PySINDy to find the equation that best fits the data u. Does not use derivatives of equations. 
+    Here each coordinate x, y, and z is fitted together.
     """
     xdot = u[:, 0:1]
     ydot = u[:, 1:2]
@@ -177,12 +178,12 @@ def main() -> None:
 
     data_file_dir = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_dir, "r") as file_read:
-        coordinate_data = np.array(file_read.get("coordinate_data"))
+        coordinate_data_noise = np.array(file_read.get("coordinate_data_noise"))
         t = np.array(file_read.get("t"))
 
-    # add noise to the data using rmse
-    rmse = mean_squared_error(coordinate_data, np.zeros((coordinate_data).shape), squared=False)
-    coordinate_data_noise = coordinate_data + np.random.normal(0, rmse * NOISE_LEVEL, coordinate_data.shape)  # Add noise
+    # # add noise to the data using rmse
+    # rmse = mean_squared_error(coordinate_data, np.zeros((coordinate_data).shape), squared=False)
+    # coordinate_data_noise = coordinate_data + np.random.normal(0, rmse * NOISE_LEVEL, coordinate_data.shape)  # Add noise
 
     # Select the window of time to use for fitting
     t_window = t[t <= WINDOW_SIZE]
