@@ -64,7 +64,6 @@ def main() -> None:
 
     
     u0_x = np.array((coordinate_data_fit[-1, 0:1])) # start point is the last data point of fit data
-    print(u0_x)
     simulate_data_x = modelx.simulate(u0_x, t_predict)
     
     u0_y = np.array(coordinate_data_fit[-1, 1:2]) # start point is the last data point of fit data

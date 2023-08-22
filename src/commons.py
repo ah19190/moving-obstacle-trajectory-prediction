@@ -11,12 +11,12 @@ TRAJECTORY_DATA_FILE = "../original-data/drone_trajectory_data.csv"
 
 # STLSQ constants 
 THRESHOLD_MIN = 0.0
-THRESHOLD_MAX  = 0.0
-NUMBER_OF_THRESHOLD_VALUES = 2
+THRESHOLD_MAX  = 0.2
+NUMBER_OF_THRESHOLD_VALUES = 11
 MAX_ITERATIONS = 10
 
 # Constants for the projectile motion problem
-dt = 0.01 # Time step (s)
+dt = 0.1 # Time step (s)
 TIME_OF_DATA = 2
 PREDICTION_TIME = 0.5 # time to predict (in seconds)
 WINDOW_SIZE = 2 # data taken into account for prediction

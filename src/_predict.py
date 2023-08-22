@@ -86,8 +86,7 @@ def main() -> None:
     
     # Newer approach where we predict each dimension separately
     u0_x = np.hstack((coordinate_data_fit[-1, 0:1], xdot[-1])) # start point is the last data point of fit data
-    simulate_data_x = modelx.simulate(u0_x, t_predict)
-    
+    simulate_data_x = modelx.simulate(u0_x, t_predict)  
     simulate_data_x = simulate_data_x[:, 0:1] # we only want the value of x coordinate, not xdot
 
     u0_y = np.hstack((coordinate_data_fit[-1, 1:2], ydot[-1])) # start point is the last data point of fit data

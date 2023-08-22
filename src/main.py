@@ -35,10 +35,10 @@ def main():
     with h5py.File(data_file_dir, "r") as file_read:
         t = np.array(file_read.get("t"))
 
-    command = ["python3", "_fit.py"]
+    command = ["python3", "_fit2.py"]
     subprocess.run(command)
 
-    command = ["python3", "_predict.py"]
+    command = ["python3", "_predict2.py"]
     subprocess.run(command)
 
     # This part is for when i want to do continuous data generation
