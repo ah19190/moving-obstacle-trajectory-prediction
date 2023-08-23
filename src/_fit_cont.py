@@ -171,9 +171,11 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
     parser.add_argument("--output_dir", dest="output_dir", default=OUTPUT_DIR)
+    parser.add_argument("--time", type=float, required=True)  
     args = parser.parse_args()
     data_dir = args.data_dir
     output_dir = args.output_dir
+    time = args.time
 
     data_file_dir = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_dir, "r") as file_read:
@@ -181,7 +183,7 @@ def main() -> None:
         t = np.array(file_read.get("t"))
 
     # Select the window of time to use for fitting
-    t_window = t[t <= WINDOW_SIZE]
+    t_window = t[t <= time + WINDOW_SIZE]
     coordinate_data_noise_window = coordinate_data_noise[:len(t_window)]
 
     # (model_all, xdot, ydot, zdot) = fit2(coordinate_data_noise_window, t_window) 

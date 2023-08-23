@@ -16,7 +16,7 @@ Have added the calculation of the median coefficient and ensured the optimizer i
 lsoda--  warning..internal t (=r1) and h (=r2) are
        such that in the machine, t + h = t on the next step 
 I get this warning when the hyperparameter is too low, so how do i generalize my code to choose this hyperparameter? 
-
+Currently I manually adjust the hyperparameter when i see the warning pop up 
 
 
 TODO

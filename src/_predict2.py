@@ -1,4 +1,4 @@
-"""Predicts a trajectory using the SINDy model."""
+"""Predicts a trajectory using the SINDy model. This version does not include any derivative of x, y, z."""
 # This will predict PREDICTION_TIME seconds of data using the model
 
 import argparse
