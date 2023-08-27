@@ -2,37 +2,68 @@ Issues to be resolved + investigated:
 
 1. rmse index is always 0, due to the fact that the coefficients seem to always be the same across all the thresholds (SOLVED)
 Idea: Is this caused by the fact that because I use ensemble, the last model is saved instead of the median? 
-so currently i am able to get it to choose not just the index 0, but have seen index 1 and 2 
-so maybe it is not an issue for now. 
+Maybe I need to manually use the RMSE graph and check whether 0 really is the best to see what the issue is? 
 
 2. How do I use the median ensemble coefficients instead of the last fitted model? (SOLVED)
    My calculations seem to be getting worse if I use this compared to before
 # TODO: how do i use the ensemble coefficients instead of the last model coefficients and pass it to my predict model 
 Have added the calculation of the median coefficient and ensured the optimizer is reinitialised with it 
 
-3. My model now cannot handle any noise in the data, it will send warning and abort
-
-4. Warning 
+3. Warning 
 lsoda--  warning..internal t (=r1) and h (=r2) are
        such that in the machine, t + h = t on the next step 
 I get this warning when the hyperparameter is too low, so how do i generalize my code to choose this hyperparameter? 
 Currently I manually adjust the hyperparameter when i see the warning pop up 
 
+But also this occurs and then it will throw an error below 
+/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/sklearn/utils/extmath.py:189: RuntimeWarning: overflow encountered in matmul
+  ret = a @ b
+capi_return is NULL
+Call-back cb_f_in_lsoda__user__routines failed.
+Fatal Python error: F2PySwapThreadLocalCallbackPtr: F2PySwapThreadLocalCallbackPtr: PyLong_AsVoidPtr failed
+Python runtime state: initialized
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/scipy/integrate/_ivp/base.py", line 138, in fun
+    return self.fun_single(t, y)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/scipy/integrate/_ivp/base.py", line 20, in fun_wrapped
+    return np.asarray(fun(t, y), dtype=dtype)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/pysindy/pysindy.py", line 860, in rhs
+    return self.predict(x[np.newaxis, :])[0]
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/pysindy/pysindy.py", line 461, in predict
+    x, _, u = _comprehend_and_validate_inputs(x, 1, None, u, self.feature_library)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/pysindy/pysindy.py", line 956, in _comprehend_and_validate_inputs
+    x = [comprehend_and_validate(xi, ti) for xi, ti in _zip_like_sequence(x, t)]
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/pysindy/pysindy.py", line 956, in <listcomp>
+    x = [comprehend_and_validate(xi, ti) for xi, ti in _zip_like_sequence(x, t)]
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/pysindy/pysindy.py", line 954, in comprehend_and_validate
+    return validate_no_reshape(arr, t)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/pysindy/utils/base.py", line 72, in validate_no_reshape
+    check_array(x, ensure_2d=False, allow_nd=True)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/sklearn/utils/validation.py", line 921, in check_array
+    _assert_all_finite
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/sklearn/utils/validation.py", line 161, in _assert_all_finite
+    raise ValueError(msg_err)
+ValueError: Input contains infinity or a value too large for dtype('float64').
 
 TODO
 
 1. Figure out why code cannot handle noise 
 Fixed issue where cannot handle noise, as it is due to hyperparameter being too low + my start point for simulate function was incorrect 
+But as shown above, error occurs sometimes 
 
-2. Get code to be able to identify specific window of time it wants to take in, and predict 
-- currently it goes from t = 0 to whatever window you specify 
+2. Code prediction seems to be very off 
+I have implemented a moving average filter, and the predictions on gazebo data seems to make sense to me. It does seem to follow from the window
+Although definitely need elastic window to improve accuracy as the prediction around when it changes direction is off but makes sense 
+
+Thing to try to resolve issues: 
+- add a noise filter for the noisy data to make it cleaner, so to pre process it (Kalman filter? Gaussian filter?) 
+- Change the way the derivative is implemented
+- "how to take a derivative on noisy signals" (shift the data like there is a delay operator in between and give the model to take this as a derivative)
+
 
 Features that I need to implement: 
-- Modularize code further so this can run on different type of data inputs (currently _fit.py is generalized, but _predict.py is quite specific)
-  The goal would be to be able to just input xyz data into my code, and then it will output the prediction (maybe in a 3D diagram)
-  of the trajectory, but the prediction is updated every 0.5s
-- Take in adaptive window of data based on how well prediction is and predict only 0.5s of future trajectory 
-- Continuous prediction every 0.5 seconds using a while loop 
+- Take in adaptive window of data based on how accurate prediction is  
+- Prediction is shown a a range in a cone 
 
 After implementing features:
 - test on real data, start to quantify accuracy 

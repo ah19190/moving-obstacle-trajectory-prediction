@@ -11,6 +11,8 @@ import h5py
 import numpy as np
 from IPython import get_ipython
 
+import sys
+sys.path.append("..")
 from commons import DATA_DIR, OUTPUT_DIR, TIME_OF_DATA, PREDICTION_TIME, dt, WINDOW_SIZE
 from utils_graph import three_d_graph_result
 
