@@ -182,6 +182,8 @@ def fit2(u: np.ndarray,
     model_all.print() # comment this out if you do not want the model printed to terminal 
     return (model_all, xdot, ydot, zdot)
 
+
+# Function to find the start and end time indices 
 def find_time_indices(t, start_time, window_size):
     """
     Finds the indices of time points for different intervals.
