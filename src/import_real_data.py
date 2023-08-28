@@ -7,7 +7,8 @@ import h5py
 import numpy as np
 from sklearn.metrics import mean_squared_error
 
-from utils_graph import three_d_graph_result_new, moving_average_filter
+from utils_graph import three_d_graph_result_new
+from utils_noise import moving_average_filter
 
 from commons import ORIGINAL_DATA_DIR, DATA_DIR, TRAJECTORY_DATA_FILE, NOISE_LEVEL, MOVING_WINDOW_SIZE
 
@@ -69,13 +70,14 @@ def main()-> None:
     # Apply a moving average filter to denoise the data
     coordinate_data_noise = moving_average_filter(coordinate_data_noise, MOVING_WINDOW_SIZE)
 
+
     data_file_path = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_path, "w") as file:
         file.create_dataset(name="coordinate_data", data=coordinate_data)
         file.create_dataset(name="coordinate_data_noise", data=coordinate_data_noise)
         file.create_dataset(name="t", data=t)
 
-    # three_d_graph_result_new(coordinate_data, coordinate_data_noise, t) # check the data by plotting it 
+    three_d_graph_result_new(coordinate_data, coordinate_data_noise, t) # check the data by plotting it 
 
 if __name__ == '__main__':
     # logging.info("parsing drone data.")

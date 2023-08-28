@@ -103,7 +103,7 @@ def main() -> None:
         simulate_data_z = modelz.simulate(u0_z, t_predict)
     simulate_data_z = simulate_data_z[:, 0:1] # we only want the value of z coordinate, not zdot
     
-    three_d_graph_result(coordinate_ground_truth, simulate_data_x, simulate_data_y, simulate_data_z, t_ground_truth)
+    three_d_graph_result(coordinate_data[0: end_index_with_prediction], coordinate_ground_truth, simulate_data_x, simulate_data_y, simulate_data_z, t_ground_truth)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

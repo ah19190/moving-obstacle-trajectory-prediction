@@ -1,4 +1,4 @@
-"""Predicts a trajectory using the SINDy model. This is the old code that works with the projectile motion problem."""
+"""Predicts a trajectory using the SINDy model. This is the old code that works with the projectile motion problem. Code does not take a moving window."""
 
 import argparse
 import pickle
@@ -187,7 +187,7 @@ def main() -> None:
     coordinate_data_noise_window = coordinate_data_noise[:len(t_window)]
 
     # (model_all, xdot, ydot, zdot) = fit2(coordinate_data_noise_window, t_window) 
-    (modelx, modely, modelz, xdot, ydot, zdot) = fit1(coordinate_data_noise_window, t_window) # se fit 1 which calculates model separately for each dimension
+    (modelx, modely, modelz, xdot, ydot, zdot) = fit1(coordinate_data_noise_window, t_window) # see fit 1 which calculates model separately for each dimension
 
     Path(output_dir).mkdir(exist_ok=True)
     output_file_dir = Path(output_dir, "models.pkl")

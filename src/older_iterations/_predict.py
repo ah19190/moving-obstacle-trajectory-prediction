@@ -1,4 +1,4 @@
-"""Predicts a trajectory using the SINDy model. This is the old code that works with the projectile motion problem."""
+"""Predicts a trajectory using the SINDy model. This is the old code that works with the projectile motion problem. Code does not take a moving window."""
 # This will predict PREDICTION_TIME seconds of data using the model
 
 import argparse
@@ -13,7 +13,7 @@ from IPython import get_ipython
 
 import sys
 sys.path.append("..")
-from commons import DATA_DIR, OUTPUT_DIR, TIME_OF_DATA, PREDICTION_TIME, dt, WINDOW_SIZE
+from commons import DATA_DIR, OUTPUT_DIR, PREDICTION_TIME, dt, WINDOW_SIZE
 from utils_graph import three_d_graph_result
 
 # Initialize integrator keywords for solve_ivp to replicate the odeint defaults

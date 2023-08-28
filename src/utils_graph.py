@@ -61,7 +61,7 @@ def graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
     plt.show()
 
 
-def three_d_graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
+def three_d_graph_result(u: np.ndarray, u_window: np.ndarray, u_approximation_x: np.ndarray,
                 u_approximation_y: np.ndarray,u_approximation_z: np.ndarray,
                 t: np.ndarray) -> None:
     """Graphs the original trajectory and the SINDy trajectory in 3D space
@@ -77,10 +77,13 @@ def three_d_graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
     ax.set_title('3D Projectile Motion')  
 
     # Plot the starting point of the data
-    ax.scatter(u[0, 0], u[0, 1], u[0, 2], color='red', label='Start of training data')
+    ax.scatter(u[0, 0], u[0, 1], u[0, 2], color='red', label='Start of coordinate data')
 
     # Plot the trajectory of the obstacle (without noise)
     ax.plot(u[:, 0], u[:, 1], u[: , 2], color='black', label='Ground truth')
+
+    # Plot the starting point of the window
+    ax.scatter(u_window[0, 0], u_window[0, 1], u_window[0, 2], color='blue', label='Start of window')
 
     # Plot the starting point of the SINDy approximation
     ax.scatter(u_approximation_x[0, 0], u_approximation_y[0, 0], u_approximation_z[0, 0], color='green', label='Start of SINDy approximation')
@@ -116,65 +119,5 @@ def three_d_graph_result_new(u: np.ndarray,u2: np.ndarray, t: np.ndarray) -> Non
     plt.legend()
     plt.show()
 
-def fft_denoiser(x, n_components, to_real=True):
-    """Fast fourier transform denoiser.
-    
-    Denoises data using the fast fourier transform.
-    
-    Parameters
-    ----------
-    x : numpy.array
-        The data to denoise.
-    n_components : int
-        The value above which the coefficients will be kept.
-    to_real : bool, optional, default: True
-        Whether to remove the complex part (True) or not (False)
-        
-    Returns
-    -------
-    clean_data : numpy.array
-        The denoised data.
-        
-    References
-    ----------
-    .. [1] Steve Brunton - Denoising Data with FFT[Python]
-       https://www.youtube.com/watch?v=s2K1JfNR7Sc&ab_channel=SteveBrunton
-    
-    """
-    n = len(x)
-    
-    # compute the fft
-    fft = np.fft.fft(x, n)
-    
-    # compute power spectrum density
-    # squared magnitud of each fft coefficient
-    PSD = fft * np.conj(fft) / n
 
-    # Plot the power spectrum density
-    # plt.plot(PSD)
-    # plt.show()
-
-    # keep high frequencies
-    _mask = PSD > n_components
-    fft = _mask * fft
-    
-    # inverse fourier transform
-    clean_data = np.fft.ifft(fft)
-    
-    if to_real:
-        clean_data = clean_data.real
-    
-    return clean_data
-
-def moving_average_filter(data, window_size):
-    """Moving average filter.
-    """
-    window = np.ones(window_size) / window_size
-    smoothed_data = np.apply_along_axis(lambda x: np.convolve(x, window, mode='same'), axis=0, arr=data)
-    
-    for i in range(window_size // 2):
-        smoothed_data[i] = data[i]
-        smoothed_data[-i - 1] = data[-i - 1]
-    
-    return smoothed_data
 

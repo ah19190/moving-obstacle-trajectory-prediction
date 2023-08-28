@@ -50,8 +50,9 @@ TODO
 1. Figure out why code cannot handle noise 
 Fixed issue where cannot handle noise, as it is due to hyperparameter being too low + my start point for simulate function was incorrect 
 But as shown above, error occurs sometimes 
+Potential short term fix: if there is a warning, skip the predict and move on? 
 
-2. Code prediction seems to be very off 
+2. Code prediction seems to be off, although it makes sense
 I have implemented a moving average filter, and the predictions on gazebo data seems to make sense to me. It does seem to follow from the window
 Although definitely need elastic window to improve accuracy as the prediction around when it changes direction is off but makes sense 
 
