@@ -29,7 +29,7 @@ def ignore_specific_warnings():
     yield
     warnings.filters = filters
 
-# Function to choose best algo hyperperameter lambda 
+# Function to choose best algo hyperparameter lambda 
 def find_lowest_rmse_threshold(coefs, opt, model, threshold_scan, x_test, t_test):
     dt = t_test[1] - t_test[0]
     mse = np.zeros(len(threshold_scan))
@@ -45,7 +45,7 @@ def find_lowest_rmse_threshold(coefs, opt, model, threshold_scan, x_test, t_test
     print("lowest rmse index: ", lowest_rmse_index)
     return threshold_scan[lowest_rmse_index]
 
-
+# Function to fit the best model using PySINDy (Current approach where each dimension is fitted separately)
 def fit1(u: np.ndarray,
         t: np.ndarray) -> Tuple[ps.SINDy, ps.SINDy, np.ndarray, np.ndarray]:
     """Uses PySINDy to find the equation that best fits the data u. Includes using derivatives of equations. 
@@ -133,7 +133,7 @@ def fit1(u: np.ndarray,
 
     return (modelx, modely, modelz, xdot, ydot, zdot)
 
-# Function to fit the best model using PySINDy
+# Function to fit the best model using PySINDy (old approach where we fit all dimensions at once)
 def fit2(u: np.ndarray,
         t: np.ndarray) -> Tuple[ps.SINDy, np.ndarray, np.ndarray, np.ndarray]:
     """Uses PySINDy to find the equation that best fits the data u. Does not use derivatives of equations. 
@@ -182,6 +182,25 @@ def fit2(u: np.ndarray,
     model_all.print() # comment this out if you do not want the model printed to terminal 
     return (model_all, xdot, ydot, zdot)
 
+def find_time_indices(t, start_time, window_size):
+    """
+    Finds the indices of time points for different intervals.
+
+    Parameters:
+        t (numpy.ndarray): Array of time values.
+        start_time (float): Starting time for the interval.
+        window_size (float): Size of the window for the first interval.
+
+    Returns:
+        tuple: A tuple containing two indices - start_index, end_index.
+    """
+    # Find the index of the first value greater than or equal to start_time
+    start_index = np.searchsorted(t, start_time, side='left')
+    
+    # Find the index of the first value greater than end_time (exclusive)
+    end_index = np.searchsorted(t, start_time + window_size, side='right')
+    
+    return start_index, end_index
 
 def main() -> None:
     # logging.info("Fitting.")
@@ -201,11 +220,7 @@ def main() -> None:
         coordinate_data_noise = np.array(file_read.get("coordinate_data_noise"))
         t = np.array(file_read.get("t"))
 
-    # Find the index of the first value greater than or equal to start_time
-    start_index = np.searchsorted(t, start_time, side='left')
-    
-    # Find the index of the first value greater than end_time (exclusive)
-    end_index = np.searchsorted(t, start_time + WINDOW_SIZE, side='right')
+    start_index, end_index = find_time_indices(t, start_time, WINDOW_SIZE)
     
     # Select the window of time to use for fitting   
     t_window = t[start_index:end_index]

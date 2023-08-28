@@ -77,7 +77,7 @@ def main()-> None:
         file.create_dataset(name="coordinate_data_noise", data=coordinate_data_noise)
         file.create_dataset(name="t", data=t)
 
-    three_d_graph_result_new(coordinate_data, coordinate_data_noise, t) # check the data by plotting it 
+    # three_d_graph_result_new(coordinate_data, coordinate_data_noise, t) # check the data by plotting it 
 
 if __name__ == '__main__':
     # logging.info("parsing drone data.")
