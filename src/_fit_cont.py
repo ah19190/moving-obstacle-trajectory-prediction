@@ -31,6 +31,20 @@ def ignore_specific_warnings():
 
 # Function to choose best algo hyperparameter lambda 
 def find_lowest_rmse_threshold(coefs, opt, model, threshold_scan, x_test, t_test):
+    """
+    Finds the threshold value that results in the lowest RMSE score for model predictions.
+
+    Parameters:
+        coefs (list): List of coefficient arrays for different threshold values.
+        opt: The optimizer associated with the PySINDy model.
+        model: The PySINDy model for prediction.
+        threshold_scan (numpy.ndarray): Array of threshold values to consider.
+        x_test (numpy.ndarray): Array containing the testing data for prediction.
+        t_test (numpy.ndarray): Array of time values corresponding to the testing data.
+
+    Returns:
+        float: The threshold value that yields the lowest RMSE score for predictions.
+    """
     dt = t_test[1] - t_test[0]
     mse = np.zeros(len(threshold_scan))
     mse_sim = np.zeros(len(threshold_scan))
@@ -42,16 +56,23 @@ def find_lowest_rmse_threshold(coefs, opt, model, threshold_scan, x_test, t_test
             x_test_sim = 1e4
         mse_sim[i] = np.sum((x_test - x_test_sim) ** 2)
     lowest_rmse_index = np.argmin(mse_sim) #get the lowest rmse index, important terms not truncated off 
-    print("lowest rmse index: ", lowest_rmse_index)
+    # print("lowest rmse index: ", lowest_rmse_index)
     return threshold_scan[lowest_rmse_index]
 
 # Function to fit the best model using PySINDy (Current approach where each dimension is fitted separately)
 def fit1(u: np.ndarray,
         t: np.ndarray) -> Tuple[ps.SINDy, ps.SINDy, np.ndarray, np.ndarray]:
-    """Uses PySINDy to find the equation that best fits the data u. Includes using derivatives of equations. 
-       Here each coordinate x, y, and z is fitted separately.
     """
+    Fits the best model using PySINDy for each coordinate (x, y, and z) separately.
 
+    Parameters:
+        u (numpy.ndarray): Array containing the coordinate and derivative data.
+        t (numpy.ndarray): Array of time values corresponding to the data.
+
+    Returns:
+        tuple: A tuple containing the fitted models for x, y, and z dimensions,
+        along with the corresponding coefficient arrays for each threshold value.
+    """
     threshold_scan = np.linspace(THRESHOLD_MIN, THRESHOLD_MAX, NUMBER_OF_THRESHOLD_VALUES)
     coefs = []
 
@@ -181,7 +202,6 @@ def fit2(u: np.ndarray,
 
     model_all.print() # comment this out if you do not want the model printed to terminal 
     return (model_all, xdot, ydot, zdot)
-
 
 # Function to find the start and end time indices 
 def find_time_indices(t, start_time, window_size):

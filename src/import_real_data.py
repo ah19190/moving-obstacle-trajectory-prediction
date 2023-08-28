@@ -70,7 +70,6 @@ def main()-> None:
     # Apply a moving average filter to denoise the data
     coordinate_data_noise = moving_average_filter(coordinate_data_noise, MOVING_WINDOW_SIZE)
 
-
     data_file_path = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_path, "w") as file:
         file.create_dataset(name="coordinate_data", data=coordinate_data)
