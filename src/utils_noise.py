@@ -3,6 +3,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+from scipy.ndimage import gaussian_filter1d
+
 def moving_average_filter(data, window_size):
     """Moving average filter.
     """
@@ -13,4 +15,10 @@ def moving_average_filter(data, window_size):
         smoothed_data[i] = data[i]
         smoothed_data[-i - 1] = data[-i - 1]
     
+    return smoothed_data
+
+def guassian_filter(data, sigma):
+    """Guassian filter.
+    """
+    smoothed_data = np.apply_along_axis(lambda x: gaussian_filter1d(x, sigma=sigma), axis=0, arr=data)
     return smoothed_data

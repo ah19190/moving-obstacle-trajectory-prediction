@@ -8,14 +8,19 @@ import h5py
 import numpy as np 
 
 from sklearn.metrics import mean_squared_error
+from scipy.ndimage import gaussian_filter1d
 
 import sys
 sys.path.append("..")
-from commons import ORIGINAL_DATA_DIR, DATA_DIR, TIME_OF_DATA, PREDICTION_TIME, NOISE_LEVEL,MOVING_WINDOW_SIZE, dt, x0, y0, z0, v0, launch_angle
-from utils_graph import three_d_graph_result_new, moving_average_filter
+from commons import ORIGINAL_DATA_DIR, DATA_DIR, TIME_OF_DATA, PREDICTION_TIME, NOISE_LEVEL,MOVING_WINDOW_SIZE, dt, x0, y0, z0, v0, launch_angle, SIGMA
+from utils_graph import three_d_graph_result_new
+from utils_noise import moving_average_filter
 
 # Constants 
 g = 9.81  # Acceleration due to gravity (m/s^2)
+
+def moving_average_filter(data, window_size):
+    return np.convolve(data, np.ones(window_size)/window_size, mode='same')
 
 # Function to calculate the projectile motion (remove z to follow the example)
 def projectile_motion(v0, theta_deg, t):
@@ -54,16 +59,15 @@ def main() -> None:
     
     # Apply a moving average filter to denoise the data
     coordinate_data_noise = moving_average_filter(coordinate_data_noise, MOVING_WINDOW_SIZE)
+    # coordinate_data_noise = gaussian_filter1d(coordinate_data_noise, sigma=SIGMA)
 
     data_file_path = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_path, "w") as file:
         file.create_dataset(name="coordinate_data", data=coordinate_data)
         file.create_dataset(name="coordinate_data_noise", data=coordinate_data_noise)
-        # file.create_dataset(name="coordinate_data_noise_clean", data=coordinate_data_noise_clean)
         file.create_dataset(name="t", data=t)
 
-    # three_d_graph_result_new(coordinate_data_noise, t) # check the data by plotting it 
-    three_d_graph_result_new(coordinate_data,coordinate_data_noise, t) # check the data by plotting it
+    # three_d_graph_result_new(coordinate_data,coordinate_data_noise, t) # check the effect of noise filter against original data
 
 if __name__ == "__main__":
     main()

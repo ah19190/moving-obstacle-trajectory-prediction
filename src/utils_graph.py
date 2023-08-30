@@ -76,11 +76,14 @@ def three_d_graph_result(u: np.ndarray, u_window: np.ndarray, u_approximation_x:
     ax.set_zlabel('Z (m)')
     ax.set_title('3D Projectile Motion')  
 
-    # Plot the starting point of the data
-    ax.scatter(u[0, 0], u[0, 1], u[0, 2], color='red', label='Start of coordinate data')
+    # # Plot the starting point of the data
+    # ax.scatter(u[0, 0], u[0, 1], u[0, 2], color='red', label='Start of coordinate data')
 
-    # Plot the trajectory of the obstacle (without noise)
-    ax.plot(u[:, 0], u[:, 1], u[: , 2], color='black', label='Ground truth')
+    # # Plot the trajectory of the obstacle (without noise)
+    # ax.plot(u[:, 0], u[:, 1], u[: , 2], color='black', label='Ground truth')
+
+    # Plot the trajectory of the obstacle of the window
+    ax.plot(u_window[:, 0], u_window[:, 1], u_window[: , 2], color='black', label='Window')
 
     # Plot the starting point of the window
     ax.scatter(u_window[0, 0], u_window[0, 1], u_window[0, 2], color='blue', label='Start of window')

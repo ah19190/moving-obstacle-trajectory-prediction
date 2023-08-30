@@ -14,6 +14,10 @@ def run_import_real_data_script():
     command = ["python3", "import_real_data.py"]
     subprocess.run(command)
 
+def run_generate_projectile_data_script():
+    command = ["python3", "generate_projectile_data.py"]
+    subprocess.run(command)
+
 def run_fit_script(time):
     command = ["python3", "_fit_cont.py", "--start_time", str(time)]
     # command = ["python3", "_fit2.py", "--start_time", str(time)]
@@ -34,8 +38,7 @@ def main():
     data_dir = args.data_dir
     
     run_import_real_data_script() # This will get data from whichever file specified in commons.py
-    # command = ["python3", "generate_projectile_data.py"]
-    # subprocess.run(command)
+    # run_generate_projectile_data_script() # This will generate data for a projectile motion problem 
     
     data_file_dir = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_dir, "r") as file_read:

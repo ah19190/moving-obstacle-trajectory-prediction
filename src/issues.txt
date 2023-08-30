@@ -15,35 +15,6 @@ lsoda--  warning..internal t (=r1) and h (=r2) are
 I get this warning when the hyperparameter is too low, so how do i generalize my code to choose this hyperparameter? 
 Currently I manually adjust the hyperparameter when i see the warning pop up 
 
-But also this occurs and then it will throw an error below 
-/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/sklearn/utils/extmath.py:189: RuntimeWarning: overflow encountered in matmul
-  ret = a @ b
-capi_return is NULL
-Call-back cb_f_in_lsoda__user__routines failed.
-Fatal Python error: F2PySwapThreadLocalCallbackPtr: F2PySwapThreadLocalCallbackPtr: PyLong_AsVoidPtr failed
-Python runtime state: initialized
-Traceback (most recent call last):
-  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/scipy/integrate/_ivp/base.py", line 138, in fun
-    return self.fun_single(t, y)
-  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/scipy/integrate/_ivp/base.py", line 20, in fun_wrapped
-    return np.asarray(fun(t, y), dtype=dtype)
-  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/pysindy/pysindy.py", line 860, in rhs
-    return self.predict(x[np.newaxis, :])[0]
-  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/pysindy/pysindy.py", line 461, in predict
-    x, _, u = _comprehend_and_validate_inputs(x, 1, None, u, self.feature_library)
-  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/pysindy/pysindy.py", line 956, in _comprehend_and_validate_inputs
-    x = [comprehend_and_validate(xi, ti) for xi, ti in _zip_like_sequence(x, t)]
-  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/pysindy/pysindy.py", line 956, in <listcomp>
-    x = [comprehend_and_validate(xi, ti) for xi, ti in _zip_like_sequence(x, t)]
-  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/pysindy/pysindy.py", line 954, in comprehend_and_validate
-    return validate_no_reshape(arr, t)
-  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/pysindy/utils/base.py", line 72, in validate_no_reshape
-    check_array(x, ensure_2d=False, allow_nd=True)
-  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/sklearn/utils/validation.py", line 921, in check_array
-    _assert_all_finite
-  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/sklearn/utils/validation.py", line 161, in _assert_all_finite
-    raise ValueError(msg_err)
-ValueError: Input contains infinity or a value too large for dtype('float64').
 
 TODO
 
@@ -51,6 +22,13 @@ TODO
 Fixed issue where cannot handle noise, as it is due to hyperparameter being too low + my start point for simulate function was incorrect 
 But as shown above, error occurs sometimes 
 Potential short term fix: if there is a warning, skip the predict and move on? 
+
+Have implemented weak SINDy instead of just ensemble SINDy
+
+/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/scipy/integrate/_odepack_py.py:248: ODEintWarning: Excess work done on this call (perhaps wrong Dfun type). Run with full_output = 1 to get quantitative information.
+I am getting this error message that leads to the prediction being weird and not showing correctly
+
+Prediction seems to be correct for the simple projectile motion problem. so it works, but just not very good with noise 
 
 2. Code prediction seems to be off, although it makes sense
 I have implemented a moving average filter, and the predictions on gazebo data seems to make sense to me. It does seem to follow from the window

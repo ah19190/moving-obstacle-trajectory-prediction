@@ -6,35 +6,12 @@ import argparse
 import h5py
 import numpy as np
 from sklearn.metrics import mean_squared_error
+from scipy.ndimage import gaussian_filter1d
 
 from utils_graph import three_d_graph_result_new
 from utils_noise import moving_average_filter
 
-from commons import ORIGINAL_DATA_DIR, DATA_DIR, TRAJECTORY_DATA_FILE, NOISE_LEVEL, MOVING_WINDOW_SIZE
-
-# # load the data from the csv file using genfromtxt and store it in a numpy array
-# def load_data(start_time, end_time):
-#     """
-#     This is a function that load the data from the csv file using genfromtxt and store it in a numpy array
-#     Data should be in the following format: time (in ms) , x, y, z
-
-#     :return coordinates: The coordinates of the drone from time to time + PREDICTION_FREQUENCY
-#     :return t: The time of the drone
-#     """
-#     data = np.genfromtxt(TRAJECTORY_DATA_FILE, delimiter=',', skip_header=1, dtype=float)
-#     coordinate_data = data[:, 1:4]
-#     t = data[:, 0]
-
-#     # Find the index of the first value greater than or equal to start_time
-#     start_index = np.searchsorted(t, start_time, side='left')
-    
-#     # Find the index of the first value greater than end_time (exclusive)
-#     end_index = np.searchsorted(t, end_time, side='right')
-
-#     coordinate_data = data[start_index:end_index, 1:4]
-#     t = t[start_index:end_index]
-
-#     return coordinate_data, t
+from commons import ORIGINAL_DATA_DIR, DATA_DIR, TRAJECTORY_DATA_FILE, NOISE_LEVEL, MOVING_WINDOW_SIZE, SIGMA
 
 # load the data from the csv file using genfromtxt and store it in a numpy array
 def load_data():
@@ -68,7 +45,10 @@ def main()-> None:
     coordinate_data_noise = coordinate_data + np.random.normal(0, rmse * NOISE_LEVEL, coordinate_data.shape)  # Add noise
 
     # Apply a moving average filter to denoise the data
-    coordinate_data_noise = moving_average_filter(coordinate_data_noise, MOVING_WINDOW_SIZE)
+    # coordinate_data_noise = moving_average_filter(coordinate_data_noise, MOVING_WINDOW_SIZE)
+    
+    # Use gaussian filter to denoise the data
+    coordinate_data_noise = gaussian_filter1d(coordinate_data_noise, sigma=SIGMA)
 
     data_file_path = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_path, "w") as file:
@@ -76,7 +56,7 @@ def main()-> None:
         file.create_dataset(name="coordinate_data_noise", data=coordinate_data_noise)
         file.create_dataset(name="t", data=t)
 
-    # three_d_graph_result_new(coordinate_data, coordinate_data_noise, t) # check the data by plotting it 
+    # three_d_graph_result_new(coordinate_data, coordinate_data_noise, t) # check effectiveness of noise filter by plotting against actual data
 
 if __name__ == '__main__':
     # logging.info("parsing drone data.")

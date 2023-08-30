@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from copy import copy
 import argparse
 import logging
-import pickle
+import dill as pickle
 import sys
 from pathlib import Path
 
@@ -70,6 +70,21 @@ def load_models(output_dir):
         modelx, modely, modelz = pickle.load(file_read)
     return modelx, modely, modelz
 
+def load_model_new(output_dir):
+    """
+    Loads models for different dimensions from a models file.
+
+    Parameters:
+        output_dir (str): Directory containing the models file.
+
+    Returns:
+        tuple: A tuple containing model_all. 
+    """
+    models_file_path = Path(output_dir, "models.pkl")
+    with open(models_file_path, "rb") as file_read:
+        model_all = pickle.load(file_read)
+    return model_all
+
 def load_derivatives(output_dir):
     """
     Loads derivative data from a derivatives file.
@@ -102,8 +117,9 @@ def predict_dimension(model, coordinate_data_fit, derivative_data, t_predict, di
         numpy.ndarray: Predicted trajectory data for the specified dimension.
     """
     u0 = np.hstack((coordinate_data_fit[-1, dim_idx:dim_idx + 1], derivative_data[-1])) # start point is the last data point of fit data
-    with ignore_specific_warnings():
-        simulate_data = model.simulate(u0, t_predict)
+    # with ignore_specific_warnings():
+    simulate_data = model.simulate(u0, t_predict)
+    
     return simulate_data[:, 0:1] # we only want the value of coordinate, not the derivative
 
 def find_time_indices(t, start_time, window_size, prediction_time):
@@ -148,9 +164,11 @@ def main() -> None:
     # Load the data from the data_dir
     coordinate_data, t = load_data(data_dir)
     
-    modelx, modely, modelz = load_models(output_dir)
+    # modelx, modely, modelz = load_models(output_dir)
 
-    xdot, ydot, zdot = load_derivatives(output_dir)
+    # xdot, ydot, zdot = load_derivatives(output_dir)
+
+    model_all = load_model_new(output_dir)
 
     # Get the true data to compare it to the predicted data
     start_index, end_index, end_index_with_prediction = find_time_indices(t, start_time, WINDOW_SIZE, PREDICTION_TIME)
@@ -167,12 +185,18 @@ def main() -> None:
     t_predict = t[end_index:end_index_with_prediction] # predict the next PREDICTION_TIME seconds of data
     
     # We predict each dimension separately
-    simulate_data_x = predict_dimension(modelx, coordinate_data_fit, xdot, t_predict, 0)
-    simulate_data_y = predict_dimension(modely, coordinate_data_fit, ydot, t_predict, 1)
-    simulate_data_z = predict_dimension(modelz, coordinate_data_fit, zdot, t_predict, 2)
+    # simulate_data_x = predict_dimension(modelx, coordinate_data_fit, xdot, t_predict, 0)
+    # simulate_data_y = predict_dimension(modely, coordinate_data_fit, ydot, t_predict, 1)
+    # simulate_data_z = predict_dimension(modelz, coordinate_data_fit, zdot, t_predict, 2)
+
+    # predict the trajectory using the model_all
+    simulate_data = model_all.simulate(coordinate_data_fit[-1, :], t_predict, integrator="odeint")
+    simulate_data_x = simulate_data[:, 0:1]
+    simulate_data_y = simulate_data[:, 1:2]
+    simulate_data_z = simulate_data[:, 2:3]
     
     # Plot the simulation against the ground truth
-    three_d_graph_result(coordinate_data[0: end_index_with_prediction], coordinate_ground_truth, simulate_data_x, simulate_data_y, simulate_data_z, t_ground_truth)
+    # three_d_graph_result(coordinate_data[0: end_index_with_prediction], coordinate_ground_truth, simulate_data_x, simulate_data_y, simulate_data_z, t_ground_truth)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
