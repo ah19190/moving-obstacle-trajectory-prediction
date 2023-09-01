@@ -1,4 +1,5 @@
-"""Predicts a trajectory using the SINDy model. This is the old code that works with the projectile motion problem."""
+"""Fits the dynamical equation using the trajectory data. This is the latest code that works with the projectile motion problem and gazebo drone data.
+"""
 
 import warnings
 from contextlib import contextmanager

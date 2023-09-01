@@ -48,7 +48,7 @@ def main()-> None:
     # coordinate_data_noise = moving_average_filter(coordinate_data_noise, MOVING_WINDOW_SIZE)
     
     # Use gaussian filter to denoise the data
-    coordinate_data_noise = gaussian_filter1d(coordinate_data_noise, sigma=SIGMA)
+    # coordinate_data_noise = gaussian_filter1d(coordinate_data_noise, sigma=SIGMA)
 
     data_file_path = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_path, "w") as file:
@@ -56,7 +56,7 @@ def main()-> None:
         file.create_dataset(name="coordinate_data_noise", data=coordinate_data_noise)
         file.create_dataset(name="t", data=t)
 
-    # three_d_graph_result_ground_vs_noisy(coordinate_data, coordinate_data_noise, t) # check effectiveness of noise filter by plotting against actual data
+    three_d_graph_result_ground_vs_noisy(coordinate_data, coordinate_data_noise, t) # check effectiveness of noise filter by plotting against actual data
 
 if __name__ == '__main__':
     # logging.info("parsing drone data.")

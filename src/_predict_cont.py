@@ -1,4 +1,5 @@
-"""Predicts a trajectory using the SINDy model."""
+"""Predicts a trajectory using the SINDy model from _fit_cont.py.
+"""
 # This will predict PREDICTION_TIME seconds of data using the model
 
 import warnings

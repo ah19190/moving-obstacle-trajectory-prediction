@@ -15,33 +15,33 @@ MOVING_WINDOW_SIZE = 10 # Moving average of 10 data points
 SIGMA = 0.3 # Standard deviation for Gaussian filter
 
 # Noise level to add to the data (use this for generated data with no noise)
-NOISE_LEVEL = 0.01
+NOISE_LEVEL = 0.00
 
-# # Gazebo drone data 
-# # STLSQ constants
-# THRESHOLD_MIN = 0.00
-# THRESHOLD_MAX  = 0.1
-# NUMBER_OF_THRESHOLD_VALUES = 11
-# MAX_ITERATIONS = 10
-
-# # Data generation constants
-# PREDICTION_TIME = 100 # time to predict (in milliseconds)
-# WINDOW_SIZE = 500 # data taken into account for prediction
-# PREDICTION_FREQUENCY = 500 # frequency of prediction (in milliseconds)
-
-# Projectile motion problem
-# STLSQ constants 
+# Gazebo drone data 
+# STLSQ constants
 THRESHOLD_MIN = 0.00
-THRESHOLD_MAX  = 0.2
+THRESHOLD_MAX  = 0.1
 NUMBER_OF_THRESHOLD_VALUES = 11
 MAX_ITERATIONS = 10
 
 # Data generation constants
-dt = 0.05 # Time step (s)
-TIME_OF_DATA = 15
-PREDICTION_TIME = 0.5 # time to predict (in seconds)
-WINDOW_SIZE = 3 # data taken into account for prediction
-PREDICTION_FREQUENCY = 3
+PREDICTION_TIME = 100 # time to predict (in milliseconds)
+WINDOW_SIZE = 500 # data taken into account for prediction
+PREDICTION_FREQUENCY = 500 # frequency of prediction (in milliseconds)
+
+# # Projectile motion problem
+# # STLSQ constants 
+# THRESHOLD_MIN = 0.00
+# THRESHOLD_MAX  = 0.2
+# NUMBER_OF_THRESHOLD_VALUES = 11
+# MAX_ITERATIONS = 10
+
+# # Data generation constants
+# dt = 0.05 # Time step (s)
+# TIME_OF_DATA = 15
+# PREDICTION_TIME = 0.5 # time to predict (in seconds)
+# WINDOW_SIZE = 3 # data taken into account for prediction
+# PREDICTION_FREQUENCY = 3
 
 # starting point of ball 
 x0 = 30
