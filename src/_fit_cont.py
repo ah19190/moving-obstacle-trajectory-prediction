@@ -17,9 +17,10 @@ from pysindy.differentiation import FiniteDifference
 from pysindy.optimizers import STLSQ
 from scipy.linalg import LinAlgWarning
 from sklearn.exceptions import ConvergenceWarning
-from sklearn.model_selection import train_test_split
+from itertools import product
 
 from commons import DATA_DIR, OUTPUT_DIR,THRESHOLD_MIN, THRESHOLD_MAX,NUMBER_OF_THRESHOLD_VALUES, MAX_ITERATIONS, NOISE_LEVEL, WINDOW_SIZE
+from evaluation_metrics import AIC
 
 @contextmanager
 def ignore_specific_warnings():
@@ -61,80 +62,36 @@ def find_lowest_rmse_threshold(coefs, opt, model, threshold_scan, u_test, t_test
     print("lowest rmse index: ", lowest_rmse_index)
     return threshold_scan[lowest_rmse_index]
 
-# Algorithm to scan over threshold values during Ridge Regression, and select highest performing model on the test set
-def rudy_algorithm2(
-    x_train,
-    x_test,
-    t,
-    pde_lib,
-    dtol,
-    alpha=1e-5,
-    tol_iter=25,
-    normalize_columns=True,
-    optimizer_max_iter=20,
-    optimization="STLSQ",
-):
+def fit_and_tune_sr3(feature_library, dif_method, x_train, dt, x_valid, thresholds,
+                     nus=(1 / 30, 0.1, 1 / 3, 1, 10 / 3)):
+    aics = []
+    params = list(product(thresholds, nus))
+    for threshold, nu in params:
+        model = ps.SINDy(
+            optimizer=ps.SR3(threshold=threshold, nu=nu, max_iter=1000),
+            feature_library=feature_library,
+            differentiation_method=dif_method
+        )
+        try:
+            model.fit(x_train, t=dt, quiet=True)
 
-    # Do an initial least-squares fit to get an initial guess of the coefficients
-    optimizer = ps.STLSQ(
-        threshold=0,
-        alpha=0,
-        max_iter=optimizer_max_iter,
-        normalize_columns=normalize_columns,
-        ridge_kw={"tol": 1e-10},
+            x_dot_valid = model.differentiate(x_valid, dt)
+            x_dot_pred = model.predict(x_valid)
+            k = (np.abs(model.coefficients()) > 0).sum()
+            aic = AIC(x_dot_valid, x_dot_pred, k, keep_dimensionalized=False)
+            aics.append(aic)
+        except ValueError:  # SR3 sometimes fails with overflow
+            aics.append(1e20)
+
+    best_model_ix = np.argmin(np.array(aics))
+    best_t, best_nu = params[best_model_ix]
+    model = ps.SINDy(
+        optimizer=ps.SR3(threshold=best_t, nu=best_nu, max_iter=10000),
+        feature_library=feature_library,
+        differentiation_method=dif_method
     )
-
-    # Compute initial model
-    model = ps.SINDy(feature_library=pde_lib, optimizer=optimizer)
-    model.fit(x_train, t=t)
-
-    # Set the L0 penalty based on the condition number of Theta
-    l0_penalty = 1e-3 * np.linalg.cond(optimizer.Theta)
-    coef_best = optimizer.coef_
-
-    # Compute MSE on the testing x_dot data (takes x_test and computes x_dot_test)
-    error_best = model.score(
-        x_test, metric=mean_squared_error, squared=False
-    ) + l0_penalty * np.count_nonzero(coef_best)
-
-    coef_history_ = np.zeros((coef_best.shape[0], 
-                              coef_best.shape[1], 
-                              1 + tol_iter))
-    error_history_ = np.zeros(1 + tol_iter)
-    coef_history_[:, :, 0] = coef_best
-    error_history_[0] = error_best
-    tol = dtol
-
-    # Loop over threshold values, note needs some coding 
-    # if not using STLSQ optimizer.
-    for i in range(tol_iter):
-        if optimization == "STLSQ":
-            optimizer = ps.STLSQ(
-                threshold=tol,
-                alpha=alpha,
-                max_iter=optimizer_max_iter,
-                normalize_columns=normalize_columns,
-                ridge_kw={"tol": 1e-10},
-            )
-        model = ps.SINDy(feature_library=pde_lib, optimizer=optimizer)
-        model.fit(x_train, t=t)
-        coef_new = optimizer.coef_
-        coef_history_[:, :, i + 1] = coef_new
-        error_new = model.score(
-            x_test, metric=mean_squared_error, squared=False
-        ) + l0_penalty * np.count_nonzero(coef_new)
-        error_history_[i + 1] = error_new
-        
-        # If error improves, set the new best coefficients
-        if error_new <= error_best:
-            error_best = error_new
-            coef_best = coef_new
-            tol += dtol
-        else:
-            tol = max(0, tol - 2 * dtol)
-            dtol = 2 * dtol / (tol_iter - i)
-            tol += dtol
-    return coef_best, error_best, coef_history_, error_history_
+    model.fit(x_train, t=dt, quiet=False)
+    return model, best_t, best_nu
 
 # Function to fit the best model using PySINDy (Old approach where each dimension is fitted separately and just uses ensemble SINDy)
 def fit1(u: np.ndarray,
@@ -231,7 +188,7 @@ def fit1(u: np.ndarray,
 
     return (modelx, modely, modelz, xdot, ydot, zdot)
 
-# Function to fit the best model using PySINDy (current approach: Weak SINDy)
+# Function to fit the best model using Weak SINDy
 def fit3(u: np.ndarray,
         t: np.ndarray) -> Tuple[ps.SINDy]:
     """
@@ -315,10 +272,11 @@ def fit3(u: np.ndarray,
 
     return original_model
 
-# Tried out Rudy Algorithm but returned errors 
-def fit4(u: np.ndarray, t: np.ndarray) -> Tuple[ps.SINDy]:
+# Function to fit the best model using Weak SINDy, changed to use fit_and_tune_sr3 instead of find_lowest_rmse_threshold
+def fit4(u: np.ndarray,
+        t: np.ndarray) -> Tuple[ps.SINDy]:
     """
-    Fits the best model using PySINDy.
+    Fits the best model using PySINDy for each coordinate (x, y, and z) separately.
 
     Parameters:
         u (numpy.ndarray): Array containing the coordinate and derivative data.
@@ -328,9 +286,14 @@ def fit4(u: np.ndarray, t: np.ndarray) -> Tuple[ps.SINDy]:
         tuple: A tuple containing the fitted models for x, y, and z dimensions,
         along with the corresponding coefficient arrays for each threshold value.
     """
-    library_functions = [lambda x: x, lambda x: x * x, lambda x, y: x * y]
-    library_function_names = [lambda x: x, lambda x: x + x, lambda x, y: x + y]
-    ode_lib = ps.WeakPDELibrary(
+    
+    # Define weak form ODE library
+    # defaults to derivative_order = 0 if not specified,
+    # and if spatial_grid is not specified, defaults to None,
+    # which allows weak form ODEs.
+    library_functions = [lambda x: x]
+    library_function_names = [lambda x: x]
+    pde_lib = ps.WeakPDELibrary(
         library_functions=library_functions,
         function_names=library_function_names,
         spatiotemporal_grid=t,
@@ -338,43 +301,40 @@ def fit4(u: np.ndarray, t: np.ndarray) -> Tuple[ps.SINDy]:
         K=100,
     )
 
-    # Split the data into training and testing sets in order (80% training, 20% testing)
-    u_train, u_test, t_train, t_test = train_test_split(u, t, train_size=0.8, shuffle=False, stratify=None)
+    threshold_scan = np.linspace(THRESHOLD_MIN, THRESHOLD_MAX, NUMBER_OF_THRESHOLD_VALUES)
 
-    # Determine the best threshold value using rudy_algorithm2
-    best_threshold, _, _, _ = rudy_algorithm2(u_train, u_test, t_train, pde_lib=ode_lib, dtol=0.01)
+    _, lowest_rmse_threshold, best_nu = fit_and_tune_sr3(pde_lib, ps.FiniteDifference(), u, t[1] - t[0], u, threshold_scan)
 
-    # Compute u_dot using FiniteDifference
-    udot = ps.FiniteDifference()._differentiate(u, t=t)
+    # Instantiate and fit the SINDy model with the integral of u_dot
+    optimizer = ps.SR3(
+    threshold=lowest_rmse_threshold, nu=best_nu, thresholder="l1", max_iter=10, normalize_columns=True, tol=1e-1
+    )  
+    model = ps.SINDy(feature_library=pde_lib, optimizer=optimizer)
+    model.fit(u, t=t, ensemble= True, quiet=True)
 
-    # Define library functions for weak form ODE
-    library_functions = [lambda x: x, lambda x: x * x, lambda x, y: x * y]
-    library_function_names = [lambda x: x, lambda x: x + x, lambda x, y: x + y]
-    ode_lib = ps.WeakPDELibrary(
-        library_functions=library_functions,
-        function_names=library_function_names,
-        spatiotemporal_grid=t,
-        is_uniform=True,
-        K=100,
+    ensemble_coefs = np.asarray(model.coef_list)
+    median_ensemble_coefs = np.median(ensemble_coefs, axis=0) # get the median of each coefficient
+    optimizer.coef_ = median_ensemble_coefs # set the coefficients to the median of the ensemble coefficients
+    model.optimizer = optimizer # Reinitialize the optimizer with the updated coefficients
+
+    ode_lib = ps.CustomLibrary(
+    library_functions=library_functions,
+    function_names=library_function_names,
+    include_bias=True,
     )
+    optimizer = ps.SR3(
+    threshold=lowest_rmse_threshold, nu=best_nu, thresholder="l1", max_iter=10, normalize_columns=True, tol=1e-1
+    )  
+    original_model = ps.SINDy(feature_library=ode_lib, optimizer=optimizer)
+    original_model.fit(u, t=t, ensemble= True, quiet=True)
+    original_model.print()
 
-    # Use the best threshold in the optimizer
-    optimizer = ps.STLSQ(
-        threshold=best_threshold,
-        alpha=1e-5,
-        max_iter=20,
-        normalize_columns=True,
-        ridge_kw={"tol": 1e-10},
-    )
+    ensemble_coefs = np.asarray(original_model.coef_list)
+    median_ensemble_coefs = np.median(ensemble_coefs, axis=0) # get the median of each coefficient
+    optimizer.coef_ = median_ensemble_coefs # set the coefficients to the median of the ensemble coefficients
+    original_model.optimizer = optimizer # Reinitialize the optimizer with the updated coefficients
 
-    # Instantiate and fit the SINDy model
-    model = ps.SINDy(feature_library=ode_lib, optimizer=optimizer, quiet=True)
-    model.fit(u_train, t=t_train)
-
-    # Update the optimizer with the selected threshold
-    model.optimizer.threshold = best_threshold
-
-    return model
+    return original_model
 
 # Function to find the start and end time indices 
 def find_time_indices(t, start_time, window_size):
@@ -421,9 +381,8 @@ def main() -> None:
     t_window = t[start_index:end_index]
     coordinate_data_noise_window = coordinate_data_noise[start_index:end_index]
 
-    # with ignore_specific_warnings():
-        # (modelx, modely, modelz, xdot, ydot, zdot) = fit1(coordinate_data_noise_window, t_window)
-    model_all = fit3(coordinate_data_noise_window, t_window)
+    # (modelx, modely, modelz, xdot, ydot, zdot) = fit1(coordinate_data_noise_window, t_window)
+    model_all = fit4(coordinate_data_noise_window, t_window)
 
     Path(output_dir).mkdir(exist_ok=True)
     output_file_dir = Path(output_dir, "models.pkl")

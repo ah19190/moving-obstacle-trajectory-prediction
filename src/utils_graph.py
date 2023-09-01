@@ -74,7 +74,8 @@ def three_d_graph_result(u: np.ndarray, u_window: np.ndarray, u_approximation_x:
     ax.set_xlabel('X (m)')
     ax.set_ylabel('Y (m)')
     ax.set_zlabel('Z (m)')
-    ax.set_title('3D Projectile Motion')  
+    # ax.set_title('3D Projectile Motion')
+    ax.set_title('Gazebo Drone Data')    
 
     # # Plot the starting point of the data
     # ax.scatter(u[0, 0], u[0, 1], u[0, 2], color='red', label='Start of coordinate data')
@@ -97,8 +98,8 @@ def three_d_graph_result(u: np.ndarray, u_window: np.ndarray, u_approximation_x:
     plt.legend()
     plt.show()
 
-def three_d_graph_result_new(u: np.ndarray,u2: np.ndarray, t: np.ndarray) -> None:
-    """Graphs the original trajectory and the SINDy trajectory in 3D space
+def three_d_graph_result_ground_vs_noisy(u: np.ndarray,u2: np.ndarray, t: np.ndarray) -> None:
+    """Graphs the ground truth vs the noisy data in 3D space (for data which we add noise using rmse)
     """
     # Model the trajectory in 3D 
     fig = plt.figure()
@@ -108,7 +109,8 @@ def three_d_graph_result_new(u: np.ndarray,u2: np.ndarray, t: np.ndarray) -> Non
     ax.set_xlabel('X (m)')
     ax.set_ylabel('Y (m)')
     ax.set_zlabel('Z (m)')
-    ax.set_title('3D Projectile Motion')  
+    # ax.set_title('3D Projectile Motion')
+    ax.set_title('Gazebo Drone Data')  
 
     # Plot the starting point of the data
     ax.scatter(u[0, 0], u[0, 1], u[0, 2], color='red', label='Start of training data')

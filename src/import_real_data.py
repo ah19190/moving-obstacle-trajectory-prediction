@@ -8,7 +8,7 @@ import numpy as np
 from sklearn.metrics import mean_squared_error
 from scipy.ndimage import gaussian_filter1d
 
-from utils_graph import three_d_graph_result_new
+from utils_graph import three_d_graph_result_ground_vs_noisy
 from utils_noise import moving_average_filter
 
 from commons import ORIGINAL_DATA_DIR, DATA_DIR, TRAJECTORY_DATA_FILE, NOISE_LEVEL, MOVING_WINDOW_SIZE, SIGMA
@@ -56,7 +56,7 @@ def main()-> None:
         file.create_dataset(name="coordinate_data_noise", data=coordinate_data_noise)
         file.create_dataset(name="t", data=t)
 
-    # three_d_graph_result_new(coordinate_data, coordinate_data_noise, t) # check effectiveness of noise filter by plotting against actual data
+    # three_d_graph_result_ground_vs_noisy(coordinate_data, coordinate_data_noise, t) # check effectiveness of noise filter by plotting against actual data
 
 if __name__ == '__main__':
     # logging.info("parsing drone data.")
