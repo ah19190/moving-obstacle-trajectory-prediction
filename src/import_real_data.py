@@ -28,6 +28,26 @@ def load_data():
 
     return coordinate_data, t
 
+def get_subset_of_data(coordinate_data, coordinate_data_noise, t, start, end):
+    """
+    This is a function that gets a subset of the data from the data file
+    
+    :param coordinate_data: The coordinates of the drone
+    :param coordinate_data_noise: The coordinates of the drone with noise
+    :param t: The time of the drone
+    :param start: The start of the section you want to subset (ratio of the length of the data)
+    :param end: The end of the section you want to subset
+
+    :return coordinate_data_subset: The subset of the coordinates of the drone
+    :return coordinate_data_noise_subset: The subset of the coordinates of the drone with noise
+    :return t_subset: The subset of the time of the drone
+    """
+    coordinate_data_train = coordinate_data[int(start * len(t)):int(end * len(coordinate_data))]
+    coordinate_data_noise_train = coordinate_data_noise[int(start * len(t)):int(end * len(coordinate_data_noise))]
+    t_train = t[int(start * len(t)):int(end * len(t))]
+
+    return coordinate_data_train, coordinate_data_noise_train, t_train
+
 def main()-> None:
     # logging.info("parsing drone data.")
     parser = argparse.ArgumentParser()
@@ -57,10 +77,7 @@ def main()-> None:
         file.create_dataset(name="t", data=t)
 
     # Take the first 10% of the data into a new dataset for training
-    coordinate_data_train = coordinate_data[int(0.1 * len(t)):int(0.3 * len(coordinate_data))]
-    coordinate_data_noise_train = coordinate_data_noise[int(0.1 * len(t)):int(0.3 * len(coordinate_data_noise))]
-    t_train = t[int(0.1 * len(t)):int(0.3 * len(t))]
-
+    coordinate_data_train, coordinate_data_noise_train, t_train = get_subset_of_data(coordinate_data, coordinate_data_noise, t, 0.2, 0.5)
     three_d_graph_result_ground_vs_noisy(coordinate_data_train, coordinate_data_noise_train, t_train) # check effectiveness of noise filter by plotting against actual data
 
     # three_d_graph_result_ground_vs_noisy(coordinate_data, coordinate_data_noise, t) # check effectiveness of noise filter by plotting against actual data

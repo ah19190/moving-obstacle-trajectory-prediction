@@ -42,7 +42,7 @@ Thing to try to resolve issues:
 
 Features that I need to implement: 
 - Take in adaptive window of data based on how accurate prediction is  
-- Prediction is shown a a range in a cone 
+- Prediction is shown a a range in a cone (DONE, but not a cone just a series of lines)
 
 After implementing features:
 - test on real data, start to quantify accuracy 
