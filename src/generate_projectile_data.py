@@ -13,7 +13,7 @@ import sys
 sys.path.append("..")
 from commons import ORIGINAL_DATA_DIR, DATA_DIR, TIME_OF_DATA, PREDICTION_TIME, NOISE_LEVEL,MOVING_WINDOW_SIZE, dt, x0, y0, z0, v0, launch_angle, SIGMA
 from utils_graph import three_d_graph_result_ground_vs_noisy
-from utils_noise import moving_average_filter, running_mean, guassian_filter
+from utils_noise import moving_average_filter, guassian_filter
 
 # Constants 
 g = 9.81  # Acceleration due to gravity (m/s^2)
@@ -54,7 +54,7 @@ def main() -> None:
     # coordinate_data_noise_clean = fft_denoiser(coordinate_data_noise, 4, to_real=True)
     
     # Apply a moving average filter to denoise the data
-    coordinate_data_noise = moving_average_filter(coordinate_data_noise, MOVING_WINDOW_SIZE)
+    # coordinate_data_noise = moving_average_filter(coordinate_data_noise, MOVING_WINDOW_SIZE)
     # coordinate_data_noise = gaussian_filter1d(coordinate_data_noise, sigma=SIGMA)
 
     data_file_path = Path(data_dir, "data.hdf5")
@@ -63,7 +63,7 @@ def main() -> None:
         file.create_dataset(name="coordinate_data_noise", data=coordinate_data_noise)
         file.create_dataset(name="t", data=t)
 
-    three_d_graph_result_ground_vs_noisy(coordinate_data,coordinate_data_noise, t) # check the effect of noise filter against original data
+    # three_d_graph_result_ground_vs_noisy(coordinate_data,coordinate_data_noise, t) # check the effect of noise filter against original data
 
 if __name__ == "__main__":
     main()

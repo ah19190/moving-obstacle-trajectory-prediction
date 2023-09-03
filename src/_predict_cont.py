@@ -19,7 +19,7 @@ from scipy.linalg import LinAlgWarning
 from sklearn.exceptions import ConvergenceWarning
 
 from commons import DATA_DIR, OUTPUT_DIR, PREDICTION_TIME, WINDOW_SIZE
-from utils_graph import three_d_graph_result
+from utils_graph import three_d_graph_result, three_d_graph_result_ensemble
 
 # Initialize integrator keywords for solve_ivp to replicate the odeint defaults
 integrator_keywords = {}
@@ -86,6 +86,21 @@ def load_model_new(output_dir):
         model_all = pickle.load(file_read)
     return model_all
 
+def load_ensemble_models(output_dir):
+    """
+    Loads models for different dimensions from a models file.
+
+    Parameters:
+        output_dir (str): Directory containing the models file.
+
+    Returns:
+        tuple: A tuple containing ensemble_models.
+    """
+    models_file_path = Path(output_dir, "ensemble_coefs.pkl")
+    with open(models_file_path, "rb") as file_read:
+        ensemble_coefs = pickle.load(file_read)
+    return ensemble_coefs
+
 def load_derivatives(output_dir):
     """
     Loads derivative data from a derivatives file.
@@ -106,6 +121,7 @@ def load_derivatives(output_dir):
 def predict_dimension(model, coordinate_data_fit, derivative_data, t_predict, dim_idx):
     """
     Predicts the trajectory of a specific dimension using a given model.
+    Not used in this file, as now we simulate all the dimensions at once.
 
     Parameters:
         model (model): The model to use for prediction (e.g., modelx, modely, modelz).
@@ -148,7 +164,6 @@ def find_time_indices(t, start_time, window_size, prediction_time):
     return start_index, end_index, end_index_with_prediction
 
 def main() -> None:
-    # logging.info("Predicting.")
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
@@ -163,41 +178,43 @@ def main() -> None:
     start_time = args.start_time
 
     # Load the data from the data_dir
-    coordinate_data, t = load_data(data_dir)
-    
-    # modelx, modely, modelz = load_models(output_dir)
-
-    # xdot, ydot, zdot = load_derivatives(output_dir)
+    coordinate_data, t = load_data(data_dir)   
 
     model_all = load_model_new(output_dir)
+    ensemble_coefs = load_ensemble_models(output_dir) # load the ensemble models 
 
     # Get the true data to compare it to the predicted data
     start_index, end_index, end_index_with_prediction = find_time_indices(t, start_time, WINDOW_SIZE, PREDICTION_TIME)
     
     # Select the window used for fitting   
     coordinate_data_fit = coordinate_data[start_index:end_index]
-    t_fit = t[start_index:end_index]
+    # t_fit = t[start_index:end_index]
 
     # Select the window of time that was used for fitting + PREDICTION_TIME seconds
     t_ground_truth = t[start_index:end_index_with_prediction]
     coordinate_ground_truth = coordinate_data[start_index:end_index_with_prediction] 
 
     # Time points for the prediction
-    t_predict = t[end_index:end_index_with_prediction] # predict the next PREDICTION_TIME seconds of data
-    
-    # We predict each dimension separately
-    # simulate_data_x = predict_dimension(modelx, coordinate_data_fit, xdot, t_predict, 0)
-    # simulate_data_y = predict_dimension(modely, coordinate_data_fit, ydot, t_predict, 1)
-    # simulate_data_z = predict_dimension(modelz, coordinate_data_fit, zdot, t_predict, 2)
+    t_predict = t[end_index:end_index_with_prediction] # predict the next PREDICTION_TIME seconds of data  
 
     # predict the trajectory using the model_all
     simulate_data = model_all.simulate(coordinate_data_fit[-1, :], t_predict, integrator="odeint")
-    simulate_data_x = simulate_data[:, 0:1]
-    simulate_data_y = simulate_data[:, 1:2]
-    simulate_data_z = simulate_data[:, 2:3]
     
     # Plot the simulation against the ground truth
-    three_d_graph_result(coordinate_data[0: end_index_with_prediction], coordinate_ground_truth, simulate_data_x, simulate_data_y, simulate_data_z, t_ground_truth)
+    three_d_graph_result(coordinate_data[0: end_index_with_prediction], coordinate_ground_truth, simulate_data)
+    
+    # Plot the simulation against the ground truth, showing the ensemble predictions as well 
+    # three_d_graph_result_ensemble(coordinate_data_fit, coordinate_ground_truth, t_predict, ensemble_coefs, model_all)
+    
+
+    # Old working for when the dimensions were predicted separately
+    # modelx, modely, modelz = load_models(output_dir)
+
+    # xdot, ydot, zdot = load_derivatives(output_dir
+    #  # We predict each dimension separately
+    # simulate_data_x = predict_dimension(modelx, coordinate_data_fit, xdot, t_predict, 0)
+    # simulate_data_y = predict_dimension(modely, coordinate_data_fit, ydot, t_predict, 1)
+    # simulate_data_z = predict_dimension(modelz, coordinate_data_fit, zdot, t_predict, 2)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

@@ -61,11 +61,14 @@ def graph_result(u: np.ndarray, u_approximation_x: np.ndarray,
     plt.show()
 
 
-def three_d_graph_result(u: np.ndarray, u_window: np.ndarray, u_approximation_x: np.ndarray,
-                u_approximation_y: np.ndarray,u_approximation_z: np.ndarray,
-                t: np.ndarray) -> None:
+def three_d_graph_result(u: np.ndarray, u_window: np.ndarray, u_approximation: np.ndarray) -> None:
     """Graphs the original trajectory and the SINDy trajectory in 3D space
     """
+    # Extract X, Y, and Z coordinates from the data
+    u_approximation_x = u_approximation[:, 0:1]
+    u_approximation_y = u_approximation[:, 1:2]
+    u_approximation_z = u_approximation[:, 2:3]
+    
     # Model the trajectory in 3D 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -77,12 +80,13 @@ def three_d_graph_result(u: np.ndarray, u_window: np.ndarray, u_approximation_x:
     # ax.set_title('3D Projectile Motion')
     ax.set_title('Gazebo Drone Data')    
 
+    # If you want to plot against the whole data set (not just the window)
     # # Plot the starting point of the data
     # ax.scatter(u[0, 0], u[0, 1], u[0, 2], color='red', label='Start of coordinate data')
-
     # # Plot the trajectory of the obstacle (without noise)
     # ax.plot(u[:, 0], u[:, 1], u[: , 2], color='black', label='Ground truth')
 
+    # Plot just the window 
     # Plot the trajectory of the obstacle of the window
     ax.plot(u_window[:, 0], u_window[:, 1], u_window[: , 2], color='black', label='Window')
 
@@ -98,8 +102,50 @@ def three_d_graph_result(u: np.ndarray, u_window: np.ndarray, u_approximation_x:
     plt.legend()
     plt.show()
 
+def three_d_graph_result_ensemble(coordinate_data_fit: np.ndarray, coordinate_ground_truth: np.ndarray,
+                t_predict: np.ndarray,  ensemble_coefs, model_all) -> None:
+    """Graphs the original trajectory and the SINDy trajectory in 3D space with all the ensemble models
+    """
+    simulations = []
+    # Simulate the trajectory using the ensemble models and add it to a list
+    for coefs in ensemble_coefs:
+        model_all.coef = coefs
+        simulate_data = model_all.simulate(coordinate_data_fit[-1, :], t_predict, integrator="odeint")
+        simulations.append(simulate_data)
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    # Plot the trajectory of the obstacle of the window
+    ax.plot(coordinate_ground_truth[:, 0], coordinate_ground_truth[:, 1], coordinate_ground_truth[: , 2], color='black', label='Window')
+
+    # Plot the starting point of the window
+    ax.scatter(coordinate_ground_truth[0, 0], coordinate_ground_truth[0, 1], coordinate_ground_truth[0, 2], color='blue', label='Start of window')
+
+    # Plot the starting point of the SINDy approximation
+    ax.scatter(coordinate_data_fit[-1, 0], coordinate_data_fit[-1, 1], coordinate_data_fit[-1, 2], color='green', label='Start of SINDy approximation')
+    
+    for i, simulate_data in enumerate(simulations):
+        # Extract X, Y, and Z coordinates from the simulation data
+        simulate_data_x = simulate_data[:, 0]
+        simulate_data_y = simulate_data[:, 1]
+        simulate_data_z = simulate_data[:, 2]
+        
+        # Plot the trajectory of the simulation
+        ax.plot(simulate_data_x, simulate_data_y, simulate_data_z, color='red')   
+
+    # Set labels and title
+    ax.set_xlabel('X (m)')
+    ax.set_ylabel('Y (m)')
+    ax.set_zlabel('Z (m)')
+    ax.set_title('Gazebo Drone Data')       
+
+    plt.legend()
+    plt.show()
+
+
 def three_d_graph_result_ground_vs_noisy(u: np.ndarray,u2: np.ndarray, t: np.ndarray) -> None:
     """Graphs the ground truth vs the noisy data in 3D space (for data which we add noise using rmse)
+    Use this to check the how noise affects the ground truth data 
     """
     # Model the trajectory in 3D 
     fig = plt.figure()

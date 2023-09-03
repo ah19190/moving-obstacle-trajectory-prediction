@@ -294,6 +294,7 @@ def fit4(u: np.ndarray,
     # which allows weak form ODEs.
     library_functions = [lambda x: x]
     library_function_names = [lambda x: x]
+    fourier_library = ps.FourierLibrary()
     pde_lib = ps.WeakPDELibrary(
         library_functions=library_functions,
         function_names=library_function_names,
@@ -301,6 +302,7 @@ def fit4(u: np.ndarray,
         is_uniform=True,
         K=100,
     )
+    # pde_lib = fourier_library * pde_lib
 
     threshold_scan = np.linspace(THRESHOLD_MIN, THRESHOLD_MAX, NUMBER_OF_THRESHOLD_VALUES)
 
@@ -335,7 +337,7 @@ def fit4(u: np.ndarray,
     optimizer.coef_ = median_ensemble_coefs # set the coefficients to the median of the ensemble coefficients
     original_model.optimizer = optimizer # Reinitialize the optimizer with the updated coefficients
 
-    return original_model
+    return original_model, ensemble_coefs
 
 # Function to find the start and end time indices 
 def find_time_indices(t, start_time, window_size):
@@ -383,12 +385,17 @@ def main() -> None:
     coordinate_data_noise_window = coordinate_data_noise[start_index:end_index]
 
     # (modelx, modely, modelz, xdot, ydot, zdot) = fit1(coordinate_data_noise_window, t_window)
-    model_all = fit4(coordinate_data_noise_window, t_window)
-
+    model_all, ensemble_coefs = fit4(coordinate_data_noise_window, t_window)
+    
     Path(output_dir).mkdir(exist_ok=True)
     output_file_dir = Path(output_dir, "models.pkl")
     with open(output_file_dir, "wb") as file:
         pickle.dump(model_all, file)
+    
+    # save ensemble_coefs to a file
+    output_file_dir = Path(output_dir, "ensemble_coefs.pkl")
+    with open(output_file_dir, "wb") as file:
+        pickle.dump(ensemble_coefs, file)
 
     # Path(output_dir).mkdir(exist_ok=True)
     # output_file_dir = Path(output_dir, "models.pkl")

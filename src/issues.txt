@@ -47,3 +47,6 @@ Features that I need to implement:
 After implementing features:
 - test on real data, start to quantify accuracy 
 
+Things to do: 
+- Look at other research or code that predict trajectory as a comparison 
+- look/create simple csv file where object change direction
