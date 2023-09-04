@@ -54,7 +54,7 @@ def main() -> None:
     # coordinate_data_noise_clean = fft_denoiser(coordinate_data_noise, 4, to_real=True)
     
     # Apply a moving average filter to denoise the data
-    # coordinate_data_noise = moving_average_filter(coordinate_data_noise, MOVING_WINDOW_SIZE)
+    coordinate_data_noise = moving_average_filter(coordinate_data_noise, MOVING_WINDOW_SIZE)
     # coordinate_data_noise = gaussian_filter1d(coordinate_data_noise, sigma=SIGMA)
 
     data_file_path = Path(data_dir, "data.hdf5")

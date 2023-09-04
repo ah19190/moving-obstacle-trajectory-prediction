@@ -8,7 +8,7 @@ import h5py
 import subprocess
 from pathlib import Path
 
-from commons import DATA_DIR, PREDICTION_FREQUENCY, WINDOW_SIZE
+from commons import DATA_DIR, PREDICTION_FREQUENCY, WINDOW_SIZE, MAX_WINDOW_SIZE
 
 def run_import_real_data_script():
     command = ["python3", "import_real_data.py"]
@@ -47,7 +47,8 @@ def main():
     end_time = t[-1] 
 
     # This is the part where I fit and predict every PREDICTION_FREQUENCY seconds of data
-    while start_time <= end_time - PREDICTION_FREQUENCY - WINDOW_SIZE:      
+    # while start_time <= end_time - PREDICTION_FREQUENCY - WINDOW_SIZE:
+    while start_time <= end_time - PREDICTION_FREQUENCY - MAX_WINDOW_SIZE:      
 
         run_fit_script(start_time)
 

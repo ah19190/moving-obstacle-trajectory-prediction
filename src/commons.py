@@ -43,6 +43,10 @@ PREDICTION_TIME = 0.5 # time to predict (in seconds)
 WINDOW_SIZE = 3 # data taken into account for prediction
 PREDICTION_FREQUENCY = 3
 
+# new constant for adaptive window size
+MIN_WINDOW_SIZE = 1
+MAX_WINDOW_SIZE = 3
+
 # starting point of ball 
 x0 = 30
 y0 = 40
