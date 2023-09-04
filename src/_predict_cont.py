@@ -2,8 +2,6 @@
 """
 # This will predict PREDICTION_TIME seconds of data using the model
 
-import warnings
-from contextlib import contextmanager
 from copy import copy
 import argparse
 import logging
@@ -15,9 +13,6 @@ import h5py
 import numpy as np
 from IPython import get_ipython
 
-from scipy.linalg import LinAlgWarning
-from sklearn.exceptions import ConvergenceWarning
-
 from commons import DATA_DIR, OUTPUT_DIR, PREDICTION_TIME, WINDOW_SIZE
 from utils_graph import three_d_graph_result, three_d_graph_result_ensemble
 
@@ -26,17 +21,6 @@ integrator_keywords = {}
 integrator_keywords["rtol"] = 1e-12
 integrator_keywords["method"] = "LSODA"
 integrator_keywords["atol"] = 1e-12
-
-@contextmanager
-def ignore_specific_warnings():
-    filters = copy(warnings.filters)
-    warnings.filterwarnings("ignore", category=ConvergenceWarning)
-    warnings.filterwarnings("ignore", category=LinAlgWarning)
-    warnings.filterwarnings("ignore", category=UserWarning)
-    warnings.filterwarnings("ignore", message="lsoda--  warning")
-    warnings.filterwarnings("ignore", message="Sparsity parameter is too big*")
-    yield
-    warnings.filters = filters
 
 def load_data(data_dir):
     """
@@ -179,9 +163,8 @@ def main() -> None:
 
     # Load the data from the data_dir
     coordinate_data, t = load_data(data_dir)   
-
     model_all = load_model_new(output_dir)
-    ensemble_coefs = load_ensemble_models(output_dir) # load the ensemble models 
+    ensemble_coefs = load_ensemble_models(output_dir) # load the ensemble model coefficients
 
     # Get the true data to compare it to the predicted data
     start_index, end_index, end_index_with_prediction = find_time_indices(t, start_time, WINDOW_SIZE, PREDICTION_TIME)

@@ -49,7 +49,7 @@ def get_subset_of_data(coordinate_data, coordinate_data_noise, t, start, end):
     return coordinate_data_train, coordinate_data_noise_train, t_train
 
 def main()-> None:
-    # logging.info("parsing drone data.")
+    # parse the data 
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
     parser.add_argument("--original-data_dir",
@@ -60,7 +60,7 @@ def main()-> None:
 
     coordinate_data, t = load_data() 
 
-    # add noise to the data using rmse
+    # add noise to the data using rmse 
     rmse = mean_squared_error(coordinate_data, np.zeros((coordinate_data).shape), squared=False)
     coordinate_data_noise = coordinate_data + np.random.normal(0, rmse * NOISE_LEVEL, coordinate_data.shape)  # Add noise
 
@@ -77,8 +77,8 @@ def main()-> None:
         file.create_dataset(name="t", data=t)
 
     # Take the first 10% of the data into a new dataset for training
-    coordinate_data_train, coordinate_data_noise_train, t_train = get_subset_of_data(coordinate_data, coordinate_data_noise, t, 0.2, 0.5)
-    three_d_graph_result_ground_vs_noisy(coordinate_data_train, coordinate_data_noise_train, t_train) # check effectiveness of noise filter by plotting against actual data
+    # coordinate_data_train, coordinate_data_noise_train, t_train = get_subset_of_data(coordinate_data, coordinate_data_noise, t, 0.2, 0.5)
+    # three_d_graph_result_ground_vs_noisy(coordinate_data_train, coordinate_data_noise_train, t_train) # check effectiveness of noise filter by plotting against actual data
 
     # three_d_graph_result_ground_vs_noisy(coordinate_data, coordinate_data_noise, t) # check effectiveness of noise filter by plotting against actual data
 

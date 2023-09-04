@@ -7,8 +7,8 @@ DATA_DIR = str(Path(Path(__file__).parent.parent, "data"))
 OUTPUT_DIR = str(Path(Path(__file__).parent.parent, "output"))
 
 # Data file we want to parse for trajectory data 
-# TRAJECTORY_DATA_FILE = "../original-data/drone_trajectory_data.csv"
-TRAJECTORY_DATA_FILE = "../original-data/UAV_Gazebo_data/UAV_takeoff_circle.txt" # for drone data
+# TRAJECTORY_DATA_FILE = "../original-data/drone_trajectory_data.csv" # for real drone data
+TRAJECTORY_DATA_FILE = "../original-data/UAV_Gazebo_data/UAV_takeoff_circle.txt" # for Gazebo data
 
 # Constant for noise filter 
 MOVING_WINDOW_SIZE = 10 # Moving average of 10 data points 

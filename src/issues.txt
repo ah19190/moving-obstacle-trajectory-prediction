@@ -25,11 +25,6 @@ Potential short term fix: if there is a warning, skip the predict and move on?
 
 Have implemented weak SINDy instead of just ensemble SINDy
 
-/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/scipy/integrate/_odepack_py.py:248: ODEintWarning: Excess work done on this call (perhaps wrong Dfun type). Run with full_output = 1 to get quantitative information.
-I am getting this error message that leads to the prediction being weird and not showing correctly
-
-Prediction seems to be correct for the simple projectile motion problem. so it works, but just not very good with noise 
-
 2. Code prediction seems to be off, although it makes sense
 I have implemented a moving average filter, and the predictions on gazebo data seems to make sense to me. It does seem to follow from the window
 Although definitely need elastic window to improve accuracy as the prediction around when it changes direction is off but makes sense 
@@ -38,7 +33,6 @@ Thing to try to resolve issues:
 - add a noise filter for the noisy data to make it cleaner, so to pre process it (Kalman filter? Gaussian filter?) 
 - Change the way the derivative is implemented
 - "how to take a derivative on noisy signals" (shift the data like there is a delay operator in between and give the model to take this as a derivative)
-
 
 Features that I need to implement: 
 - Take in adaptive window of data based on how accurate prediction is  
@@ -49,4 +43,4 @@ After implementing features:
 
 Things to do: 
 - Look at other research or code that predict trajectory as a comparison 
-- look/create simple csv file where object change direction
+- look/create simple csv file where object change direction (can use the takeoff_circle file as that has one obvious change in direction) 

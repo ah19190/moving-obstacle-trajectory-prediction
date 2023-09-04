@@ -1,6 +1,9 @@
 import numpy as np
 
 def AIC(x_dot_valid, x_dot_pred, k, keep_dimensionalized=True, add_correction=True):
+    """
+    Calculates the Akaike Information Criterion (AIC) for a given model.
+    """
     rss = np.sum((x_dot_valid - x_dot_pred) ** 2,
                  axis=0 if keep_dimensionalized else None)
     m = x_dot_valid.shape[0] * (1 if keep_dimensionalized else x_dot_valid.shape[1])

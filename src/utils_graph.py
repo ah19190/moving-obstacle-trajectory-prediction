@@ -143,7 +143,7 @@ def three_d_graph_result_ensemble(coordinate_data_fit: np.ndarray, coordinate_gr
     plt.show()
 
 
-def three_d_graph_result_ground_vs_noisy(u: np.ndarray,u2: np.ndarray, t: np.ndarray) -> None:
+def three_d_graph_result_ground_vs_noisy(u_ground_truth: np.ndarray,u_noisy: np.ndarray, t: np.ndarray) -> None:
     """Graphs the ground truth vs the noisy data in 3D space (for data which we add noise using rmse)
     Use this to check the how noise affects the ground truth data 
     """
@@ -159,13 +159,13 @@ def three_d_graph_result_ground_vs_noisy(u: np.ndarray,u2: np.ndarray, t: np.nda
     ax.set_title('Gazebo Drone Data')  
 
     # Plot the starting point of the data
-    ax.scatter(u[0, 0], u[0, 1], u[0, 2], color='red', label='Start of training data')
+    ax.scatter(u_ground_truth[0, 0], u_ground_truth[0, 1], u_ground_truth[0, 2], color='red', label='Start of training data')
 
-    # Plot the trajectory of the obstacle (with noise)
-    ax.plot(u[:, 0], u[:, 1], u[: , 2], color='black', label='Noisy data')
+    # Plot the trajectory of the obstacle
+    ax.plot(u_ground_truth[:, 0], u_ground_truth[:, 1], u_ground_truth[: , 2], color='black', label='Ground truth')
 
     # Plot the trajectory of the obstacle (cleaned)
-    ax.plot(u2[:, 0], u2[:, 1], u2[: , 2], color='red', label='Cleaned')
+    ax.plot(u_noisy[:, 0], u_noisy[:, 1], u_noisy[: , 2], color='red', label='Cleaned')
 
     plt.legend()
     plt.show()

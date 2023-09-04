@@ -28,9 +28,7 @@ def run_predict_script(time):
     # command = ["python3", "_predict2.py", "--start_time", str(time)]
     subprocess.run(command)
 
-def main():
-    # data_buffer = [] # buffer is for when I dont have all the data available 
-
+def main(): 
     # Get the coordinate_data and t from projectile motion data
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
@@ -42,7 +40,6 @@ def main():
     
     data_file_dir = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_dir, "r") as file_read:
-        # coordinate_data = np.array(file_read.get("coordinate_data"))
         t = np.array(file_read.get("t"))
 
     # Get start and end time for the while loop

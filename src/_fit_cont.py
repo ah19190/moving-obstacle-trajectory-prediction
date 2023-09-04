@@ -33,10 +33,12 @@ def ignore_specific_warnings():
     yield
     warnings.filters = filters
 
-# Function to choose best algo hyperparameter lambda 
+# Function to choose best algo hyperparameter lambda
 def find_lowest_rmse_threshold(coefs, opt, model, threshold_scan, u_test, t_test):
     """
-    Finds the threshold value that results in the lowest RMSE score for model predictions.
+    Finds the threshold value that results in the lowest RMSE score for model predictions. 
+    This uses Pareto analysis, but this is not ideal as it is not guaranteed to find the parsimonious model.
+    Hence this method has been replaced by the fut_and_tune_sr3 method which uses AIC to find the best model.
 
     Parameters:
         coefs (list): List of coefficient arrays for different threshold values.
@@ -63,6 +65,7 @@ def find_lowest_rmse_threshold(coefs, opt, model, threshold_scan, u_test, t_test
     print("lowest rmse index: ", lowest_rmse_index)
     return threshold_scan[lowest_rmse_index]
 
+# Function to choose parsimonious model using AIC
 def fit_and_tune_sr3(feature_library, dif_method, x_train, dt, x_valid, thresholds,
                      nus=(1 / 30, 0.1, 1 / 3, 1, 10 / 3)):
     aics = []
