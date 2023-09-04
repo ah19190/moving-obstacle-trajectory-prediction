@@ -18,13 +18,28 @@ def load_data():
     """
     This is a function that load the data from the csv file using genfromtxt and store it in a numpy array
     Data should be in the following format: time (in ms) , x, y, z
+    Filter the data as well as Gazebo data is not always strictly increasing in time
 
     :return coordinates: The coordinates of the drone
     :return t: The time of the drone
     """
     data = np.genfromtxt(TRAJECTORY_DATA_FILE, delimiter=',', skip_header=1, dtype=float)
-    coordinate_data = data[:, 1:4]
-    t = data[:, 0]
+    # Initialize variables to keep track of the filtered data
+    filtered_data = [data[0]]  # Add the first row to the filtered data
+    prev_t = data[0, 0]
+
+    # Iterate through the data and filter rows where 't' is not increasing
+    for row in data[1:]:
+        t = row[0]
+        if t > prev_t:
+            filtered_data.append(row)
+            prev_t = t
+
+    filtered_data = np.array(filtered_data)  # Convert the filtered data to a numpy array
+
+    # Separate the coordinates and 't' values
+    coordinate_data = filtered_data[:, 1:4]
+    t = filtered_data[:, 0]
 
     return coordinate_data, t
 
