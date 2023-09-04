@@ -35,8 +35,8 @@ def main():
     args = parser.parse_args()
     data_dir = args.data_dir
     
-    run_import_real_data_script() # This will get data from whichever file specified in commons.py
-    # run_generate_projectile_data_script() # This will generate data for a projectile motion problem 
+    # run_import_real_data_script() # This will get data from whichever file specified in commons.py
+    run_generate_projectile_data_script() # This will generate data for a projectile motion problem 
     
     data_file_dir = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_dir, "r") as file_read:
