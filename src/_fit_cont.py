@@ -1,8 +1,6 @@
 """Fits the dynamical equation using the trajectory data. This is the latest code that works with the projectile motion problem and gazebo drone data.
 """
 
-import warnings
-from contextlib import contextmanager
 from copy import copy
 import argparse
 import dill as pickle
@@ -16,22 +14,26 @@ import pysindy as ps
 from sklearn.metrics import mean_squared_error
 from pysindy.differentiation import FiniteDifference
 from pysindy.optimizers import STLSQ
-from scipy.linalg import LinAlgWarning
-from sklearn.exceptions import ConvergenceWarning
 from itertools import product
 
 from commons import DATA_DIR, OUTPUT_DIR,THRESHOLD_MIN, THRESHOLD_MAX,NUMBER_OF_THRESHOLD_VALUES, MAX_ITERATIONS, NOISE_LEVEL, WINDOW_SIZE
 from evaluation_metrics import AIC
 
-@contextmanager
-def ignore_specific_warnings():
-    filters = copy(warnings.filters)
-    warnings.filterwarnings("ignore", category=ConvergenceWarning)
-    warnings.filterwarnings("ignore", category=LinAlgWarning)
-    warnings.filterwarnings("ignore", category=UserWarning)
-    warnings.filterwarnings("ignore", message="Sparsity parameter is too big*")
-    yield
-    warnings.filters = filters
+def get_subset_of_data(coordinate_data, training_ratio, t):
+    """
+    This is a function that gets a subset of the data from the data file
+    
+    :param coordinate_data: The coordinates of the drone
+    :param t: The time of the drone
+    :param training_ratio: The ratio of the data to be used for training set vs validation set
+
+    :return: The training and validation sets for the coordinates and time
+    """
+    coordinate_data_train = coordinate_data[:int(training_ratio * len(coordinate_data)), :]
+    coordinate_data_validation = coordinate_data[int(training_ratio * len(coordinate_data)):, :]
+    t_train = t[:int(training_ratio * len(t))]
+    t_validation = t[int(training_ratio * len(t)):]
+    return coordinate_data_train, coordinate_data_validation, t_train, t_validation
 
 # Function to choose best algo hyperparameter lambda
 def find_lowest_rmse_threshold(coefs, opt, model, threshold_scan, u_test, t_test):
@@ -309,7 +311,16 @@ def fit4(u: np.ndarray,
 
     threshold_scan = np.linspace(THRESHOLD_MIN, THRESHOLD_MAX, NUMBER_OF_THRESHOLD_VALUES)
 
-    _, lowest_rmse_threshold, best_nu = fit_and_tune_sr3(pde_lib, ps.FiniteDifference(), u, t[1] - t[0], u, threshold_scan)
+    # Get a subset of the data for training and validation and the corresponding pde library
+    u_train, u_validation, t_train, t_validation = get_subset_of_data(u, 0.5, t) # split the data into training and validation sets
+    pde_lib_train = ps.WeakPDELibrary(
+        library_functions=library_functions,
+        function_names=library_function_names,
+        spatiotemporal_grid=t_train,
+        is_uniform=True,
+        K=100,
+    )
+    _, lowest_rmse_threshold, best_nu = fit_and_tune_sr3(pde_lib_train, ps.FiniteDifference(), u_train, t[1] - t[0], u_validation, threshold_scan) # u_train needs to be the whole length of the data, so maybe we need a longer time period for validation
 
     # Instantiate and fit the SINDy model with the integral of u_dot
     optimizer = ps.SR3(
