@@ -13,7 +13,7 @@ import h5py
 import numpy as np
 from IPython import get_ipython
 
-from commons import DATA_DIR, OUTPUT_DIR, PREDICTION_TIME, WINDOW_SIZE
+from commons import DATA_DIR, OUTPUT_DIR, PREDICTION_TIME
 from utils_graph import three_d_graph_result, three_d_graph_result_ensemble, graph_result, graph_result_prediction_only, graph_error
 
 # Initialize integrator keywords for solve_ivp to replicate the odeint defaults
@@ -166,13 +166,15 @@ def main() -> float:
     parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
     parser.add_argument("--output_dir", dest="output_dir", default=OUTPUT_DIR)
     parser.add_argument("--start_time", type=float, required=True)  
-    
+    parser.add_argument("--window_size", type=float, required=True)
+
     shell = get_ipython().__class__.__name__
     argv = [] if (shell == "ZMQInteractiveShell") else sys.argv[1:]
     args = parser.parse_args(argv)
     data_dir = args.data_dir
     output_dir = args.output_dir
     start_time = args.start_time
+    window_size = args.window_size
 
     # Load the data from the data_dir
     coordinate_data, t = load_data(data_dir)   
@@ -180,7 +182,7 @@ def main() -> float:
     ensemble_coefs = load_ensemble_models(output_dir) # load the ensemble model coefficients
 
     # Get the true data to compare it to the predicted data
-    start_index, end_index, end_index_with_prediction = find_time_indices(t, start_time, WINDOW_SIZE, PREDICTION_TIME)
+    start_index, end_index, end_index_with_prediction = find_time_indices(t, start_time, window_size, PREDICTION_TIME)
     
     # Select the window used for fitting   
     coordinate_data_fit = coordinate_data[start_index:end_index]

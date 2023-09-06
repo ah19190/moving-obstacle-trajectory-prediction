@@ -15,7 +15,7 @@ MOVING_WINDOW_SIZE = 15 # Moving average of 10 data points
 SIGMA = 0.3 # Standard deviation for Gaussian filter
 
 # Noise level to add to the data (use this for generated data with no noise)
-NOISE_LEVEL = 0.02
+NOISE_LEVEL = 0.01
 
 # # Gazebo drone data 
 # # STLSQ constants

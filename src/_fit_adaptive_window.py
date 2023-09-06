@@ -171,28 +171,19 @@ def main() -> None:
     parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
     parser.add_argument("--output_dir", dest="output_dir", default=OUTPUT_DIR)
     parser.add_argument("--start_time", type=float, required=True)  
+    parser.add_argument("--window_size", type=float, required=True)
     args = parser.parse_args()
     data_dir = args.data_dir
     output_dir = args.output_dir
     start_time = args.start_time
+    window_size = args.window_size
 
     data_file_dir = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_dir, "r") as file_read:
         coordinate_data_noise = np.array(file_read.get("coordinate_data_noise"))
         t = np.array(file_read.get("t"))
-
-    # ADWIN drift detection, but this is univariate
-    # drift_detector = drift.ADWIN()
-    # drifts = []
-
-    # for i, val in enumerate(coordinate_data_noise[:, 1]):
-    #     drift_detector.update(val)   # Data is processed one sample at a time
-    #     if drift_detector.drift_detected:
-    #         # The drift detector indicates after each sample if there is a drift in the data
-    #         print(f'Change detected at index {i}')
-    #         drifts.append(i)
         
-    start_index, end_index = find_time_indices(t, start_time, WINDOW_SIZE)
+    start_index, end_index = find_time_indices(t, start_time, window_size)
     
     # Select the window of time to use for fitting   
     t_window = t[start_index:end_index]
