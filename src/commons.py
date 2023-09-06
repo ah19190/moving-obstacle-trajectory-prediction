@@ -45,7 +45,7 @@ PREDICTION_FREQUENCY = 3
 
 # new constant for adaptive window size
 MIN_WINDOW_SIZE = 1
-MAX_WINDOW_SIZE = 3
+MAX_WINDOW_SIZE = 4
 
 # starting point of ball 
 x0 = 30

@@ -11,7 +11,9 @@ from pathlib import Path
 
 import h5py
 import numpy as np
+import math
 from IPython import get_ipython
+from sklearn.metrics import mean_squared_error
 
 from commons import DATA_DIR, OUTPUT_DIR, PREDICTION_TIME
 from utils_graph import three_d_graph_result, three_d_graph_result_ensemble, graph_result, graph_result_prediction_only, graph_error
@@ -158,7 +160,7 @@ def RMSE(predicted_data, ground_truth_data):
     Returns:
         float: Root mean square error between the predicted data and the ground truth data.
     """
-    return np.sqrt(np.mean((ground_truth_data - predicted_data)**2))
+    return math.sqrt(mean_squared_error(ground_truth_data, predicted_data))
 
 def main() -> float:
 

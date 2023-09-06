@@ -77,9 +77,9 @@ def main():
 
         # run_predict_script(start_time)
         rmse_score_new = run_predict_script2(start_time, window_size)
-        # print("RMSE score: ", rmse_score)
-        # print("new RMSE score: ", rmse_score_new)
-        # print("current window size: ", window_size)
+        print("RMSE score: ", rmse_score)
+        print("new RMSE score: ", rmse_score_new)
+        print("current window size: ", window_size)
 
         if rmse_score_new > rmse_score and window_size > MIN_WINDOW_SIZE: # if rmse_score_new is worse than rmse_score, then decrease window_size
             window_size = 0.5 * window_size
@@ -91,7 +91,7 @@ def main():
             rmse_score = rmse_score_new
             window_size = window_size
 
-        # print("new window size: ", window_size)
+        print("new window size: ", window_size)
 
         start_time += PREDICTION_FREQUENCY
 

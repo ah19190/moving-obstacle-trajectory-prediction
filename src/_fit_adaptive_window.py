@@ -182,7 +182,7 @@ def main() -> None:
     with h5py.File(data_file_dir, "r") as file_read:
         coordinate_data_noise = np.array(file_read.get("coordinate_data_noise"))
         t = np.array(file_read.get("t"))
-        
+
     start_index, end_index = find_time_indices(t, start_time, window_size)
     
     # Select the window of time to use for fitting   
