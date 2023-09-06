@@ -14,7 +14,7 @@ import numpy as np
 from IPython import get_ipython
 
 from commons import DATA_DIR, OUTPUT_DIR, PREDICTION_TIME, WINDOW_SIZE
-from utils_graph import three_d_graph_result, three_d_graph_result_ensemble, graph_result, graph_result_prediction_only
+from utils_graph import three_d_graph_result, three_d_graph_result_ensemble, graph_result, graph_result_prediction_only, graph_error
 
 # Initialize integrator keywords for solve_ivp to replicate the odeint defaults
 integrator_keywords = {}
@@ -183,6 +183,9 @@ def main() -> None:
     # predict the trajectory using the model_all
     simulate_data = model_all.simulate(coordinate_data_fit[-1, :], t_predict, integrator="odeint")
     
+    # Graph the error between the ground truth and the prediction
+    graph_error(coordinate_data[end_index:end_index_with_prediction], simulate_data, t_predict)
+
     # Plot the simulation against the ground truth
     three_d_graph_result(coordinate_data[0: end_index_with_prediction], coordinate_ground_truth, simulate_data)
 
@@ -192,16 +195,6 @@ def main() -> None:
     
     # Plot the simulation against the ground truth, showing the ensemble predictions as well 
     # three_d_graph_result_ensemble(coordinate_data_fit, coordinate_ground_truth, t_predict, ensemble_coefs, model_all)
-    
-
-    # Old working for when the dimensions were predicted separately
-    # modelx, modely, modelz = load_models(output_dir)
-
-    # xdot, ydot, zdot = load_derivatives(output_dir
-    #  # We predict each dimension separately
-    # simulate_data_x = predict_dimension(modelx, coordinate_data_fit, xdot, t_predict, 0)
-    # simulate_data_y = predict_dimension(modely, coordinate_data_fit, ydot, t_predict, 1)
-    # simulate_data_z = predict_dimension(modelz, coordinate_data_fit, zdot, t_predict, 2)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

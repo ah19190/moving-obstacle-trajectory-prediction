@@ -105,6 +105,43 @@ def graph_result_prediction_only(u: np.ndarray, u_approximation: np.ndarray,
 
     plt.show()
 
+def graph_error(u: np.ndarray, u_approximation: np.ndarray,
+                t_predict: np.ndarray) -> None:
+    """Graphs the error in x(t), y(t) and z(t) of the original trajectory and the SINDy
+    excluding the window of data used for fitting 
+    """
+    # Get the modulo difference between u and u_approximation 
+    u_diff = np.abs(u - u_approximation)
+
+    # Extract X, Y, and Z coordinates from the data
+    u_diff_x = u_diff[:, 0:1]
+    u_diff_y = u_diff[:, 1:2]
+    u_diff_z = u_diff[:, 2:3]
+    
+    fig = plt.figure(figsize=plt.figaspect(1))
+    ax1 = fig.add_subplot(3, 1, 1)
+    ax2 = fig.add_subplot(3, 1, 2, sharex=ax1, sharey=ax1)
+    ax3 = fig.add_subplot(3, 1, 3, sharex=ax1, sharey=ax1)
+    fig.tight_layout(pad=3)
+
+    ax1.plot(t_predict[:], u_diff[:, 0], linewidth=1)
+    ax1.set_title("x(t)")
+    style_axis2d(ax1, "t", "x")
+    ax1.legend(labels=["Error"],
+               fontsize=8)
+
+    ax2.plot(t_predict[:], u_diff[:, 1], linewidth=1)
+    ax2.set_title("y(t)")
+    style_axis2d(ax2, "t", "y")
+    ax2.legend(labels=["Error"],
+               fontsize=8)
+    
+    ax3.plot(t_predict[:], u_diff[:, 2], linewidth=1)
+    ax3.set_title("z(t)")
+    style_axis2d(ax3, "t", "z")
+    ax3.legend(labels=["Error"],
+               fontsize=8)
+
 def three_d_graph_result(u: np.ndarray, u_window: np.ndarray, u_approximation: np.ndarray) -> None:
     """Graphs the original trajectory and the SINDy trajectory in 3D space
     """
