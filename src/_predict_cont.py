@@ -147,7 +147,20 @@ def find_time_indices(t, start_time, window_size, prediction_time):
     
     return start_index, end_index, end_index_with_prediction
 
-def main() -> None:
+def RMSE(predicted_data, ground_truth_data):
+    """
+    Finds the root mean square error between the predicted data and the ground truth data.
+
+    Parameters:
+        predicted_data (numpy.ndarray): Array of predicted data.
+        ground_truth_data (numpy.ndarray): Array of ground truth data.
+
+    Returns:
+        float: Root mean square error between the predicted data and the ground truth data.
+    """
+    return np.sqrt(np.mean((ground_truth_data - predicted_data)**2))
+
+def main() -> float:
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
@@ -192,10 +205,16 @@ def main() -> None:
     # Plot the result using graph_result 
     # graph_result(coordinate_data[0: end_index_with_prediction], simulate_data, t[0:end_index_with_prediction], t_predict)
     graph_result_prediction_only(coordinate_data[end_index:end_index_with_prediction], simulate_data,t_predict)
-    
+
+    # score using root mean square error
+    rmse_score = RMSE(simulate_data, coordinate_data[end_index:end_index_with_prediction])
+
+    # return RMSE score 
+    return rmse_score
+
     # Plot the simulation against the ground truth, showing the ensemble predictions as well 
     # three_d_graph_result_ensemble(coordinate_data_fit, coordinate_ground_truth, t_predict, ensemble_coefs, model_all)
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    main()
+    rmse_score = main()
+    print(f"RMSE Score: {rmse_score}")
