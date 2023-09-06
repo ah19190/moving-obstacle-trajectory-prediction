@@ -35,7 +35,9 @@ Thing to try to resolve issues:
 - "how to take a derivative on noisy signals" (shift the data like there is a delay operator in between and give the model to take this as a derivative)
 
 Features that I need to implement: 
-- Take in adaptive window of data based on how accurate prediction is  
+- Take in adaptive window of data based on how accurate prediction is (concept drift, needs to be multivariate as i have xyz) - how about i use the accuracy of the prediction as a way to detect? 
+if accuracy goes below certain threshold, then i can get it to cut the window in half
+
 - Prediction is shown a a range in a cone (DONE, but not a cone just a series of lines)
 
 After implementing features:

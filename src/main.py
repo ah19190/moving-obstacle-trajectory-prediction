@@ -19,7 +19,8 @@ def run_generate_projectile_data_script():
     subprocess.run(command)
 
 def run_fit_script(time):
-    command = ["python3", "_fit_cont.py", "--start_time", str(time)]
+    # command = ["python3", "_fit_cont.py", "--start_time", str(time)]
+    command = ["python3", "_fit_adaptive_window.py", "--start_time", str(time)]
     # command = ["python3", "_fit2.py", "--start_time", str(time)]
     subprocess.run(command)
 

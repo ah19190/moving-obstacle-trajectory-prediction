@@ -14,7 +14,7 @@ import numpy as np
 from IPython import get_ipython
 
 from commons import DATA_DIR, OUTPUT_DIR, PREDICTION_TIME, WINDOW_SIZE
-from utils_graph import three_d_graph_result, three_d_graph_result_ensemble
+from utils_graph import three_d_graph_result, three_d_graph_result_ensemble, graph_result, graph_result_prediction_only
 
 # Initialize integrator keywords for solve_ivp to replicate the odeint defaults
 integrator_keywords = {}
@@ -185,6 +185,10 @@ def main() -> None:
     
     # Plot the simulation against the ground truth
     three_d_graph_result(coordinate_data[0: end_index_with_prediction], coordinate_ground_truth, simulate_data)
+
+    # Plot the result using graph_result 
+    # graph_result(coordinate_data[0: end_index_with_prediction], simulate_data, t[0:end_index_with_prediction], t_predict)
+    graph_result_prediction_only(coordinate_data[end_index:end_index_with_prediction], simulate_data,t_predict)
     
     # Plot the simulation against the ground truth, showing the ensemble predictions as well 
     # three_d_graph_result_ensemble(coordinate_data_fit, coordinate_ground_truth, t_predict, ensemble_coefs, model_all)
