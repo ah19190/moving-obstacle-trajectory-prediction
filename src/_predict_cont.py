@@ -199,18 +199,18 @@ def main() -> float:
 
     # predict the trajectory using the model_all
     simulate_data = model_all.simulate(coordinate_data_fit[-1, :], t_predict, integrator="odeint")
-    
-    # Graph the error between the ground truth and the prediction
-    graph_error(coordinate_data[end_index:end_index_with_prediction], simulate_data, t_predict)
 
     # Plot the simulation against the ground truth
     three_d_graph_result(coordinate_data[0: end_index_with_prediction], coordinate_ground_truth, simulate_data)
 
     # Plot the result using graph_result 
     # graph_result(coordinate_data[0: end_index_with_prediction], simulate_data, t[0:end_index_with_prediction], t_predict)
-    graph_result_prediction_only(coordinate_data[end_index:end_index_with_prediction], simulate_data,t_predict)
-
+    # graph_result_prediction_only(coordinate_data[end_index:end_index_with_prediction], simulate_data,t_predict)
+    
+    # Graph the error between the ground truth and the prediction
+    # graph_error(coordinate_data[end_index:end_index_with_prediction], simulate_data, t_predict)
     # score using root mean square error
+
     rmse_score = RMSE(simulate_data, coordinate_data[end_index:end_index_with_prediction])
 
     # return RMSE score 

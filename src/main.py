@@ -54,8 +54,8 @@ def main():
     args = parser.parse_args()
     data_dir = args.data_dir
     
-    # run_import_real_data_script() # This will get data from whichever file specified in commons.py
-    run_generate_projectile_data_script() # This will generate data for a projectile motion problem 
+    run_import_real_data_script() # This will get data from whichever file specified in commons.py
+    # run_generate_projectile_data_script() # This will generate data for a projectile motion problem 
     
     data_file_dir = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_dir, "r") as file_read:
@@ -72,24 +72,28 @@ def main():
     # This is the part where I fit and predict every PREDICTION_FREQUENCY seconds of data
     # while start_time <= end_time - PREDICTION_FREQUENCY - WINDOW_SIZE:
     while start_time <= end_time - PREDICTION_FREQUENCY - MAX_WINDOW_SIZE:      
-
         run_fit_script(start_time, window_size)
-
         # run_predict_script(start_time)
         rmse_score_new = run_predict_script2(start_time, window_size)
-        print("RMSE score: ", rmse_score)
-        print("new RMSE score: ", rmse_score_new)
         print("current window size: ", window_size)
 
-        if rmse_score_new > rmse_score and window_size > MIN_WINDOW_SIZE: # if rmse_score_new is worse than rmse_score, then decrease window_size
-            window_size = 0.5 * window_size
+        # if rmse_score_new >= rmse_score and window_size > MIN_WINDOW_SIZE: # if rmse_score_new is worse than rmse_score, then decrease window_size
+        #     window_size = 0.5 * window_size
+        #     rmse_score = rmse_score_new
+        # elif rmse_score_new < rmse_score and window_size < MAX_WINDOW_SIZE: # if rmse_score_new is better than rmse_score, then increase window_size
+        #     window_size = 2 * window_size
+        #     rmse_score = rmse_score_new
+        # else: # if window already at maximum or minimum, don't change window_size
+        #     rmse_score = rmse_score_new
+
+        if rmse_score_new >= rmse_score : # if rmse_score_new is worse than rmse_score, then decrease window_size
+            window_size = MIN_WINDOW_SIZE
             rmse_score = rmse_score_new
-        elif rmse_score_new < rmse_score and window_size < MAX_WINDOW_SIZE: # if rmse_score_new is better than rmse_score, then increase window_size
-            window_size = 2 * window_size
+        elif rmse_score_new < rmse_score: # if rmse_score_new is better than rmse_score, then increase window_size
+            window_size = MAX_WINDOW_SIZE
             rmse_score = rmse_score_new
         else: # if window already at maximum or minimum, don't change window_size
             rmse_score = rmse_score_new
-            window_size = window_size
 
         print("new window size: ", window_size)
 
