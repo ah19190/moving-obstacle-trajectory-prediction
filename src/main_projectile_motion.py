@@ -1,5 +1,6 @@
-# Code to run the simulation for the csv files
-# We will take WINDOW_SIZE seconds of data to predict the next PREDICTION_TIME seconds of data 
+# Code to run the simulation fir the projectile motion data
+# Generate the data for a projectile motion problem every PREDICTION_FREQUENCY seconds 
+# We will then take WINDOW_SIZE seconds of data to predict the next PREDICTION_TIME seconds of data 
 
 import numpy as np
 import argparse
@@ -7,7 +8,7 @@ import h5py
 import subprocess
 from pathlib import Path
 
-from commons import DATA_DIR, PREDICTION_FREQUENCY, WINDOW_SIZE, MAX_WINDOW_SIZE, MIN_WINDOW_SIZE
+from commons_projectile_data import DATA_DIR, PREDICTION_FREQUENCY, MAX_WINDOW_SIZE, MIN_WINDOW_SIZE
 
 def run_import_real_data_script():
     command = ["python3", "import_real_data.py"]
@@ -18,15 +19,8 @@ def run_generate_projectile_data_script():
     subprocess.run(command)
 
 def run_fit_script(time, window_size):
-    # command = ["python3", "_fit_cont.py", "--start_time", str(time)]
     command = ["python3", "_fit_adaptive_window.py", "--start_time", str(time), "--window_size", str(window_size)]
     subprocess.run(command)
-
-# old run_predict_script that does not return rmse score 
-# def run_predict_script(time):
-#     command = ["python3", "_predict_cont.py", "--start_time", str(time)]
-#     # command = ["python3", "_predict2.py", "--start_time", str(time)]
-#     subprocess.run(command)
 
 def run_predict_script2(time, window_size):
     command = ["python3", "_predict_cont.py", "--start_time", str(time), "--window_size", str(window_size)]
@@ -71,7 +65,7 @@ def main():
     args = parser.parse_args()
     data_dir = args.data_dir
     
-    run_import_real_data_script() # This will get data from whichever file specified in commons.py
+    run_generate_projectile_data_script() # This will generate data for a projectile motion problem 
     
     data_file_dir = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_dir, "r") as file_read:
@@ -79,8 +73,10 @@ def main():
 
     # Get start and end time for the while loop
     # start_time = t[0]
+    print("t[0]: ", t[0])
     start_time_index = find_time_indices(t, t[0], MAX_WINDOW_SIZE)
     start_time = t[start_time_index]
+    print("start_time: ", start_time)
     end_time = t[-1] 
 
     # declare rmse_score
@@ -102,15 +98,6 @@ def main():
             rmse_score = rmse_score_new
         else: # if window already at maximum or minimum, don't change window_size
             rmse_score = rmse_score_new
-
-        # if rmse_score_new >= rmse_score : # if rmse_score_new is worse than rmse_score, then decrease window_size
-        #     window_size = MIN_WINDOW_SIZE
-        #     rmse_score = rmse_score_new
-        # elif rmse_score_new < rmse_score: # if rmse_score_new is better than rmse_score, then increase window_size
-        #     window_size = MAX_WINDOW_SIZE
-        #     rmse_score = rmse_score_new
-        # else: # if window already at maximum or minimum, don't change window_size
-        #     rmse_score = rmse_score_new
 
         print("new window size: ", window_size)
 

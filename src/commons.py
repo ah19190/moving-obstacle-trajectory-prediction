@@ -51,33 +51,6 @@ PREDICTION_FREQUENCY = 0.5 # frequency of prediction (in milliseconds)
 MIN_WINDOW_SIZE = 0.75
 MAX_WINDOW_SIZE = 1.5
 
-# # Projectile motion problem
-# # STLSQ constants 
-# THRESHOLD_MIN = 0.00
-# THRESHOLD_MAX  = 0.3
-# NUMBER_OF_THRESHOLD_VALUES = 21
-# MAX_ITERATIONS = 10
-
-# # Data generation constants
-# dt = 0.05 # Time step (s)
-# TIME_OF_DATA = 15
-# PREDICTION_TIME = 0.5 # time to predict (in seconds)
-# WINDOW_SIZE = 3 # data taken into account for prediction
-# PREDICTION_FREQUENCY = 3
-
-# # new constant for adaptive window size
-# MIN_WINDOW_SIZE = 1
-# MAX_WINDOW_SIZE = 4
-
-# starting point of ball 
-x0 = 30
-y0 = 40
-z0 = 60
-
-# Initial conditions
-v0 = 40  # Initial velocity (m/s)
-launch_angle = 30  # Launch angle in degrees
-
 # Real drone data 
 # # Data generation constants
 # TIME_OF_DATA = 2

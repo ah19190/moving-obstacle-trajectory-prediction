@@ -6,7 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 # define the graphing functions
 def style_axis2d(ax, xlabel: str, ylabel: str):
-    """Styles a 2D graph.
+    """Styles a 2D graph. Used in graph_result and graph_result_prediction_only.
     """
     very_light_gray = "#efefef"
     light_gray = "#999999"
