@@ -70,7 +70,7 @@ def fit_and_tune_sr3(feature_library, dif_method, x_train, dt, x_valid, threshol
     return model, best_t, best_nu
 
 # Function to fit the best model using Weak SINDy, changed to use fit_and_tune_sr3 instead of find_lowest_rmse_threshold
-def fit(u: np.ndarray,
+def fit1(u: np.ndarray,
         t: np.ndarray) -> Tuple[ps.SINDy]:
     """
     Fits the best model using PySINDy for each coordinate (x, y, and z) separately.
@@ -184,13 +184,12 @@ def main() -> None:
         t = np.array(file_read.get("t"))
 
     start_index, end_index = find_time_indices(t, start_time, window_size)
-    
+
     # Select the window of time to use for fitting   
     t_window = t[start_index:end_index]
     coordinate_data_noise_window = coordinate_data_noise[start_index:end_index]
+    model_all, ensemble_coefs = fit1(coordinate_data_noise_window, t_window)
 
-    model_all, ensemble_coefs = fit(coordinate_data_noise_window, t_window)
-    
     Path(output_dir).mkdir(exist_ok=True)
     output_file_dir = Path(output_dir, "models.pkl")
     with open(output_file_dir, "wb") as file:

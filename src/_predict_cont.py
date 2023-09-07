@@ -4,7 +4,6 @@
 
 from copy import copy
 import argparse
-import logging
 import dill as pickle
 import sys
 from pathlib import Path
@@ -205,12 +204,12 @@ def main() -> float:
 
     # Plot the result using graph_result 
     # graph_result(coordinate_data[0: end_index_with_prediction], simulate_data, t[0:end_index_with_prediction], t_predict)
-    # graph_result_prediction_only(coordinate_data[end_index:end_index_with_prediction], simulate_data,t_predict)
+    # graph_result_prediction_only(coordinate_data[end_index:end_index_with_prediction], simulate_data, t_predict)
     
     # Graph the error between the ground truth and the prediction
     # graph_error(coordinate_data[end_index:end_index_with_prediction], simulate_data, t_predict)
-    # score using root mean square error
 
+    #score the RMSE 
     rmse_score = RMSE(simulate_data, coordinate_data[end_index:end_index_with_prediction])
 
     # return RMSE score 
