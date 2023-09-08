@@ -11,7 +11,7 @@ MOVING_WINDOW_SIZE = 15 # Moving average of 10 data points
 SIGMA = 0.3 # Standard deviation for Gaussian filter
 
 # Noise level to add to the data (use this for generated data with no noise)
-NOISE_LEVEL = 0.00
+NOISE_LEVEL = 0.02
 
 # Projectile motion problem
 # STLSQ constants 
@@ -28,8 +28,8 @@ WINDOW_SIZE = 3 # data taken into account for prediction
 PREDICTION_FREQUENCY = 3
 
 # new constant for adaptive window size
-MIN_WINDOW_SIZE = 1
-MAX_WINDOW_SIZE = 4
+MIN_WINDOW_SIZE = 1.5
+MAX_WINDOW_SIZE = 3
 
 # starting point of ball 
 x0 = 30

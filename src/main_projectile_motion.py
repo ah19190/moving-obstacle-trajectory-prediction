@@ -72,11 +72,8 @@ def main():
         t = np.array(file_read.get("t"))
 
     # Get start and end time for the while loop
-    # start_time = t[0]
-    print("t[0]: ", t[0])
     start_time_index = find_time_indices(t, t[0], MAX_WINDOW_SIZE)
     start_time = t[start_time_index]
-    print("start_time: ", start_time)
     end_time = t[-1] 
 
     # declare rmse_score

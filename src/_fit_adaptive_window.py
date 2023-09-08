@@ -110,8 +110,7 @@ def fit1(u: np.ndarray,
         is_uniform=True,
         K=100,
     )
-    # _, lowest_rmse_threshold, best_nu = fit_and_tune_sr3(pde_lib_train, ps.FiniteDifference(), u_train, t[1] - t[0], u_validation, threshold_scan) # u_train needs to be the whole length of the data, so maybe we need a longer time period for validation
-    _, lowest_rmse_threshold, best_nu = fit_and_tune_sr3(pde_lib_train, ps.SmoothedFiniteDifference(), u_train, t[1] - t[0], u_validation, threshold_scan) # u_train needs to be the whole length of the data, so maybe we need a longer time period for validation
+    _, lowest_rmse_threshold, best_nu = fit_and_tune_sr3(pde_lib_train, ps.FiniteDifference(), u_train, t[1] - t[0], u_validation, threshold_scan) # u_train needs to be the whole length of the data, so maybe we need a longer time period for validation
 
     # Instantiate and fit the SINDy model with the integral of u_dot
     optimizer = ps.SR3(
@@ -189,6 +188,7 @@ def main() -> None:
     # Select the window of time to use for fitting   
     t_window = t[start_index:end_index]
     coordinate_data_noise_window = coordinate_data_noise[start_index:end_index]
+    
     model_all, ensemble_coefs = fit1(coordinate_data_noise_window, t_window)
 
     Path(output_dir).mkdir(exist_ok=True)

@@ -2,7 +2,6 @@
 
 from pathlib import Path
 import argparse
-import logging
 
 import h5py
 import numpy as np 
@@ -11,7 +10,7 @@ from scipy.ndimage import gaussian_filter1d
 
 import sys
 sys.path.append("..")
-from commons import ORIGINAL_DATA_DIR, DATA_DIR, TIME_OF_DATA, PREDICTION_TIME, NOISE_LEVEL,MOVING_WINDOW_SIZE, dt, x0, y0, z0, v0, launch_angle, SIGMA
+from commons_projectile_data import ORIGINAL_DATA_DIR, DATA_DIR, TIME_OF_DATA, PREDICTION_TIME, NOISE_LEVEL,MOVING_WINDOW_SIZE, dt, x0, y0, z0, v0, launch_angle, SIGMA
 from utils_graph import three_d_graph_result_ground_vs_noisy
 from utils_noise import moving_average_filter, guassian_filter
 
@@ -33,7 +32,6 @@ def projectile_motion(v0, theta_deg, t):
     # return np.array([x, y])
 
 def main() -> None:
-    # logging.info("Generating data.")
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
