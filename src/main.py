@@ -94,23 +94,23 @@ def main():
         rmse_score_new = run_predict_script2(start_time, window_size)
         print("current window size: ", window_size)
 
-        if rmse_score_new >= rmse_score and window_size > MIN_WINDOW_SIZE: # if rmse_score_new is worse than rmse_score, then decrease window_size
-            window_size = 0.5 * window_size
-            rmse_score = rmse_score_new
-        elif rmse_score_new < rmse_score and window_size < MAX_WINDOW_SIZE: # if rmse_score_new is better than rmse_score, then increase window_size
-            window_size = 2 * window_size
-            rmse_score = rmse_score_new
-        else: # if window already at maximum or minimum, don't change window_size
-            rmse_score = rmse_score_new
-
-        # if rmse_score_new >= rmse_score : # if rmse_score_new is worse than rmse_score, then decrease window_size
-        #     window_size = MIN_WINDOW_SIZE
+        # if rmse_score_new >= rmse_score and window_size > MIN_WINDOW_SIZE: # if rmse_score_new is worse than rmse_score, then decrease window_size
+        #     window_size = 0.5 * window_size
         #     rmse_score = rmse_score_new
-        # elif rmse_score_new < rmse_score: # if rmse_score_new is better than rmse_score, then increase window_size
-        #     window_size = MAX_WINDOW_SIZE
+        # elif rmse_score_new < rmse_score and window_size < MAX_WINDOW_SIZE: # if rmse_score_new is better than rmse_score, then increase window_size
+        #     window_size = 2 * window_size
         #     rmse_score = rmse_score_new
         # else: # if window already at maximum or minimum, don't change window_size
         #     rmse_score = rmse_score_new
+
+        if rmse_score_new >= rmse_score : # if rmse_score_new is worse than rmse_score, then decrease window_size
+            window_size = MIN_WINDOW_SIZE
+            rmse_score = rmse_score_new
+        elif rmse_score_new < rmse_score: # if rmse_score_new is better than rmse_score, then increase window_size
+            window_size = MAX_WINDOW_SIZE
+            rmse_score = rmse_score_new
+        else: # if window already at maximum or minimum, don't change window_size
+            rmse_score = rmse_score_new
 
         print("new window size: ", window_size)
 
@@ -118,3 +118,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+

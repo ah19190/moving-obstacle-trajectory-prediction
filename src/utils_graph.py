@@ -159,17 +159,18 @@ def three_d_graph_result(u: np.ndarray, u_window: np.ndarray, u_approximation: n
     ax.set_ylabel('Y (m)')
     ax.set_zlabel('Z (m)')
     # ax.set_title('3D Projectile Motion')
-    ax.set_title('Gazebo Drone Data')    
+    # ax.set_title('Gazebo Drone Data')
+    ax.set_title('Frisbee Data')    
 
     # If you want to plot against the whole data set (not just the window)
     # Plot the starting point of the data
-    ax.scatter(u[0, 0], u[0, 1], u[0, 2], color='red', label='Start of coordinate data')
+    # ax.scatter(u[0, 0], u[0, 1], u[0, 2], color='red', label='Start of coordinate data')
     # Plot the trajectory of the obstacle (without noise)
-    ax.plot(u[:, 0], u[:, 1], u[: , 2], color='black', label='Ground truth')
+    # ax.plot(u[:, 0], u[:, 1], u[: , 2], color='black', label='Ground truth')
 
     # Plot just the window 
     # Plot the trajectory of the obstacle of the window
-    # ax.plot(u_window[:, 0], u_window[:, 1], u_window[: , 2], color='black', label='Window')
+    ax.plot(u_window[:, 0], u_window[:, 1], u_window[: , 2], color='black', label='Window')
 
     # Plot the starting point of the window
     ax.scatter(u_window[0, 0], u_window[0, 1], u_window[0, 2], color='blue', label='Start of window')
@@ -246,7 +247,7 @@ def three_d_graph_result_ground_vs_noisy(u_ground_truth: np.ndarray,u_noisy: np.
     ax.plot(u_ground_truth[:, 0], u_ground_truth[:, 1], u_ground_truth[: , 2], color='black', label='Coordinate data')
 
     # Plot the trajectory of the obstacle (cleaned)
-    ax.plot(u_noisy[:-15, 0], u_noisy[:-15, 1], u_noisy[:-15 , 2], color='red', label='Coordinate data with noise (smoothed)') # -15 as the moving window is 15 which causes last 15 points to be averaged with 0
+    # ax.plot(u_noisy[:-15, 0], u_noisy[:-15, 1], u_noisy[:-15 , 2], color='red', label='Coordinate data with noise (smoothed)') # -15 as the moving window is 15 which causes last 15 points to be averaged with 0
 
     plt.legend()
     plt.show()

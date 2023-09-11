@@ -25,14 +25,23 @@ edge = get_edge(disc2.eom.diameter / 2 * 10)
 edge_T = edge @ r
 fig = plt.figure()
 ax = fig.add_subplot(projection="3d")
-ax.plot3D(result2["x"], result2["y"], result2["z"], "red")
+ax.plot3D(result2["x"], result2["y"], result2["z"], "black", label='Coordinate data')
 
-# ax.plot_trisurf(edge_T[:, 0] + result2["x"][50], edge_T[:, 1] + result2["y"][50], edge_T[:, 2] + result2["z"][50])
+# plot the start point 
+ax.scatter(result2["x"][0], result2["y"][0], result2["z"][0], c="red", marker="o", s=100, label='Start point')
+# Set labels and title
+ax.set_xlabel('X (m)')
+ax.set_ylabel('Y (m)')
+ax.set_zlabel('Z (m)')
+ax.set_title('Frisbee Data') 
+
+ax.plot_trisurf(edge_T[:, 0] + result2["x"][30], edge_T[:, 1] + result2["y"][30], edge_T[:, 2] + result2["z"][30])
 ax.set_xlim(0, 40)
 ax.set_ylim(-20, 20)
 ax.set_zlim(0, 10)
 
 fig.set_size_inches(8, 8)
+plt.legend()
 plt.show()
 
 # selected_features = ['times', 'x', 'y', 'z']

@@ -29,7 +29,6 @@ def projectile_motion(v0, theta_deg, t):
     z = z0 + vz0 * t - 0.5 * g * t**2
 
     return np.array([x, y, z])
-    # return np.array([x, y])
 
 def main() -> None:
 
@@ -52,7 +51,7 @@ def main() -> None:
     # coordinate_data_noise_clean = fft_denoiser(coordinate_data_noise, 4, to_real=True)
     
     # Apply a moving average filter to denoise the data
-    coordinate_data_noise = moving_average_filter(coordinate_data_noise, MOVING_WINDOW_SIZE)
+    # coordinate_data_noise = moving_average_filter(coordinate_data_noise, MOVING_WINDOW_SIZE)
     # coordinate_data_noise = gaussian_filter1d(coordinate_data_noise, sigma=SIGMA)
 
     data_file_path = Path(data_dir, "data.hdf5")
@@ -61,7 +60,7 @@ def main() -> None:
         file.create_dataset(name="coordinate_data_noise", data=coordinate_data_noise)
         file.create_dataset(name="t", data=t)
 
-    # three_d_graph_result_ground_vs_noisy(coordinate_data,coordinate_data_noise, t) # check the effect of noise filter against original data
+    three_d_graph_result_ground_vs_noisy(coordinate_data,coordinate_data_noise, t) # check the effect of noise filter against original data
 
 if __name__ == "__main__":
     main()

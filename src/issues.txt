@@ -1,44 +1,12 @@
 Issues to be resolved + investigated: 
 
-1. rmse index is always 0, due to the fact that the coefficients seem to always be the same across all the thresholds (SOLVED)
-Idea: Is this caused by the fact that because I use ensemble, the last model is saved instead of the median? 
-Maybe I need to manually use the RMSE graph and check whether 0 really is the best to see what the issue is? 
-
-2. How do I use the median ensemble coefficients instead of the last fitted model? (SOLVED)
-   My calculations seem to be getting worse if I use this compared to before
-# TODO: how do i use the ensemble coefficients instead of the last model coefficients and pass it to my predict model 
-Have added the calculation of the median coefficient and ensured the optimizer is reinitialised with it 
-
-3. Warning 
-lsoda--  warning..internal t (=r1) and h (=r2) are
-       such that in the machine, t + h = t on the next step 
-I get this warning when the hyperparameter is too low, so how do i generalize my code to choose this hyperparameter? 
-Currently I manually adjust the hyperparameter when i see the warning pop up 
+1. Frisbee data hangs on the part where i am initializing weak PDE library for training
 
 
 TODO
+1. Figure out why code cannot continue for frisbee but works for other types of data 
 
-1. Figure out why code cannot handle noise 
-Fixed issue where cannot handle noise, as it is due to hyperparameter being too low + my start point for simulate function was incorrect 
-But as shown above, error occurs sometimes 
-Potential short term fix: if there is a warning, skip the predict and move on? 
 
-Have implemented weak SINDy instead of just ensemble SINDy
-
-2. Code prediction seems to be off, although it makes sense
-I have implemented a moving average filter, and the predictions on gazebo data seems to make sense to me. It does seem to follow from the window
-Although definitely need elastic window to improve accuracy as the prediction around when it changes direction is off but makes sense 
-
-Thing to try to resolve issues: 
-- add a noise filter for the noisy data to make it cleaner, so to pre process it (Kalman filter? Gaussian filter?) 
-- Change the way the derivative is implemented
-- "how to take a derivative on noisy signals" (shift the data like there is a delay operator in between and give the model to take this as a derivative)
-
-Features that I need to implement: 
-- Take in adaptive window of data based on how accurate prediction is (concept drift, needs to be multivariate as i have xyz) - how about i use the accuracy of the prediction as a way to detect? 
-if accuracy goes below certain threshold, then i can get it to cut the window in half
-
-- Prediction is shown a a range in a cone (DONE, but not a cone just a series of lines)
 
 After implementing features:
 - test on real data, start to quantify accuracy 

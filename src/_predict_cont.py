@@ -23,6 +23,7 @@ integrator_keywords["rtol"] = 1e-12
 integrator_keywords["method"] = "LSODA"
 integrator_keywords["atol"] = 1e-12
 
+# Functions used in this file 
 def load_data(data_dir):
     """
     Loads coordinate data and time values from a data file.
@@ -41,22 +42,7 @@ def load_data(data_dir):
         t = np.array(file_read.get("t"))
     return coordinate_data, t
 
-def load_models(output_dir):
-    """
-    Loads models for different dimensions from a models file.
-
-    Parameters:
-        output_dir (str): Directory containing the models file.
-
-    Returns:
-        tuple: A tuple containing three model instances - modelx, modely, and modelz.
-    """
-    models_file_path = Path(output_dir, "models.pkl")
-    with open(models_file_path, "rb") as file_read:
-        modelx, modely, modelz = pickle.load(file_read)
-    return modelx, modely, modelz
-
-def load_model_new(output_dir):
+def load_model_tgt(output_dir):
     """
     Loads models for different dimensions from a models file.
 
@@ -85,44 +71,6 @@ def load_ensemble_models(output_dir):
     with open(models_file_path, "rb") as file_read:
         ensemble_coefs = pickle.load(file_read)
     return ensemble_coefs
-
-def load_derivatives(output_dir):
-    """
-    Loads derivative data from a derivatives file.
-
-    Parameters:
-        output_dir (str): Directory containing the derivatives file.
-
-    Returns:
-        tuple: A tuple containing three numpy arrays - xdot, ydot, and zdot.
-    """
-    derivatives_file_path = Path(output_dir, "derivatives.hdf5")
-    with h5py.File(derivatives_file_path, "r") as file_read:
-        xdot = np.array(file_read.get("xdot"))
-        ydot = np.array(file_read.get("ydot"))
-        zdot = np.array(file_read.get("zdot"))
-    return xdot, ydot, zdot
-
-def predict_dimension(model, coordinate_data_fit, derivative_data, t_predict, dim_idx):
-    """
-    Predicts the trajectory of a specific dimension using a given model.
-    Not used in this file, as now we simulate all the dimensions at once.
-
-    Parameters:
-        model (model): The model to use for prediction (e.g., modelx, modely, modelz).
-        coordinate_data_fit (numpy.ndarray): Array containing coordinate data used for fitting.
-        derivative_data (numpy.ndarray): Array containing derivative data.
-        t_predict (numpy.ndarray): Array of time points for prediction.
-        dim_idx (int): Index of the dimension to predict (0 for x, 1 for y, 2 for z).
-
-    Returns:
-        numpy.ndarray: Predicted trajectory data for the specified dimension.
-    """
-    u0 = np.hstack((coordinate_data_fit[-1, dim_idx:dim_idx + 1], derivative_data[-1])) # start point is the last data point of fit data
-    # with ignore_specific_warnings():
-    simulate_data = model.simulate(u0, t_predict)
-    
-    return simulate_data[:, 0:1] # we only want the value of coordinate, not the derivative
 
 def find_time_indices(t, start_time, window_size, prediction_time):
     """
@@ -161,6 +109,60 @@ def RMSE(predicted_data, ground_truth_data):
     """
     return math.sqrt(mean_squared_error(ground_truth_data, predicted_data))
 
+# The following functions are not used in this file, as we now simulate all the dimensions at once. Kept for reference.
+def load_models_individually(output_dir):
+    """
+    Loads models for different dimensions from a models file. Not used as we load all the models together now. 
+
+    Parameters:
+        output_dir (str): Directory containing the models file.
+
+    Returns:
+        tuple: A tuple containing three model instances - modelx, modely, and modelz.
+    """
+    models_file_path = Path(output_dir, "models.pkl")
+    with open(models_file_path, "rb") as file_read:
+        modelx, modely, modelz = pickle.load(file_read)
+    return modelx, modely, modelz
+
+def predict_dimension(model, coordinate_data_fit, derivative_data, t_predict, dim_idx):
+    """
+    Predicts the trajectory of a specific dimension using a given model.
+    Not used in this file, as now we simulate all the dimensions at once.
+
+    Parameters:
+        model (model): The model to use for prediction (e.g., modelx, modely, modelz).
+        coordinate_data_fit (numpy.ndarray): Array containing coordinate data used for fitting.
+        derivative_data (numpy.ndarray): Array containing derivative data.
+        t_predict (numpy.ndarray): Array of time points for prediction.
+        dim_idx (int): Index of the dimension to predict (0 for x, 1 for y, 2 for z).
+
+    Returns:
+        numpy.ndarray: Predicted trajectory data for the specified dimension.
+    """
+    u0 = np.hstack((coordinate_data_fit[-1, dim_idx:dim_idx + 1], derivative_data[-1])) # start point is the last data point of fit data
+    # with ignore_specific_warnings():
+    simulate_data = model.simulate(u0, t_predict)
+    
+    return simulate_data[:, 0:1] # we only want the value of coordinate, not the derivative
+
+def load_derivatives(output_dir):
+    """
+    Loads derivative data from a derivatives file. Not used as we dont model the derivatives anymore.
+
+    Parameters:
+        output_dir (str): Directory containing the derivatives file.
+
+    Returns:
+        tuple: A tuple containing three numpy arrays - xdot, ydot, and zdot.
+    """
+    derivatives_file_path = Path(output_dir, "derivatives.hdf5")
+    with h5py.File(derivatives_file_path, "r") as file_read:
+        xdot = np.array(file_read.get("xdot"))
+        ydot = np.array(file_read.get("ydot"))
+        zdot = np.array(file_read.get("zdot"))
+    return xdot, ydot, zdot
+
 def main() -> float:
 
     parser = argparse.ArgumentParser()
@@ -179,38 +181,43 @@ def main() -> float:
 
     # Load the data from the data_dir
     coordinate_data, t = load_data(data_dir)   
-    model_all = load_model_new(output_dir)
+    model_all = load_model_tgt(output_dir)
     ensemble_coefs = load_ensemble_models(output_dir) # load the ensemble model coefficients
 
     # Get the true data to compare it to the predicted data
-    start_index, end_index, end_index_with_prediction = find_time_indices(t, start_time, window_size, PREDICTION_TIME)
+    start_index, end_index_of_window, end_index_of_prediction = find_time_indices(t, start_time, window_size, PREDICTION_TIME)
     
     # Select the window used for fitting   
-    coordinate_data_fit = coordinate_data[start_index:end_index]
-    # t_fit = t[start_index:end_index]
+    coordinate_data_fit = coordinate_data[start_index:end_index_of_window]
+    # t_fit = t[start_index:end_index_of_window]
 
-    # Select the window of time that was used for fitting + PREDICTION_TIME seconds
-    t_ground_truth = t[start_index:end_index_with_prediction]
-    coordinate_ground_truth = coordinate_data[start_index:end_index_with_prediction] 
+    # Select the window used for fitting + PREDICTION_TIME seconds
+    t_ground_truth = t[start_index:end_index_of_prediction]
+    coordinate_ground_truth = coordinate_data[start_index:end_index_of_prediction] 
 
-    # Time points for the prediction
-    t_predict = t[end_index:end_index_with_prediction] # predict the next PREDICTION_TIME seconds of data  
+    # Select the time used for just the PREDICTION_TIME 
+    t_predict = t[end_index_of_window:end_index_of_prediction]
+    coordinate_predict = coordinate_data[end_index_of_window:end_index_of_prediction]
+
+    # Select the coordinate data from t = 0 to the end of the prediction time
+    coordinate_data_start_to_prediction_end = coordinate_data[0:end_index_of_prediction]
+    t_start_to_prediction_end = t[0:end_index_of_prediction]
 
     # predict the trajectory using the model_all
     simulate_data = model_all.simulate(coordinate_data_fit[-1, :], t_predict, integrator="odeint")
 
     # Plot the simulation against the ground truth
-    three_d_graph_result(coordinate_data[0: end_index_with_prediction], coordinate_ground_truth, simulate_data)
+    three_d_graph_result(coordinate_data_start_to_prediction_end, coordinate_ground_truth, simulate_data)
 
     # Plot the result using graph_result 
-    # graph_result(coordinate_data[0: end_index_with_prediction], simulate_data, t[0:end_index_with_prediction], t_predict)
-    # graph_result_prediction_only(coordinate_data[end_index:end_index_with_prediction], simulate_data, t_predict)
+    # graph_result(coordinate_data_start_to_prediction_end, simulate_data, t_start_to_prediction_end, t_predict)
+    # graph_result_prediction_only(coordinate_predict, simulate_data, t_predict) # old graph_result_prediction 
     
     # Graph the error between the ground truth and the prediction
-    # graph_error(coordinate_data[end_index:end_index_with_prediction], simulate_data, t_predict)
+    # graph_error(coordinate_predict, simulate_data, t_predict)
 
     #score the RMSE 
-    rmse_score = RMSE(simulate_data, coordinate_data[end_index:end_index_with_prediction])
+    rmse_score = RMSE(simulate_data, coordinate_data[end_index_of_window:end_index_of_prediction])
 
     # return RMSE score 
     return rmse_score
@@ -221,3 +228,7 @@ def main() -> float:
 if __name__ == "__main__":
     rmse_score = main()
     print(f"RMSE Score: {rmse_score}")
+
+
+
+
