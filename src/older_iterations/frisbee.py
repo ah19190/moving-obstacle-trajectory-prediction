@@ -5,8 +5,8 @@ from frispy.disc import Disc
 
 plt.rc("font", size=14, family="serif")
 # Negative theta is an airbounce
-disc2 = Disc(vx=40, vy = 10, theta=-0.25, dtheta=0.5)
-result2, _ = disc2.compute_trajectory(flight_time=6)
+disc2 = Disc(vx=40, vy = 30, vz = 15, theta=-0.15, phi=0.5)
+result2, _ = disc2.compute_trajectory(flight_time=10)
 
 phi = result2["phi"][50]
 theta = result2["theta"][50]
@@ -44,17 +44,16 @@ fig.set_size_inches(8, 8)
 plt.legend()
 plt.show()
 
-# selected_features = ['times', 'x', 'y', 'z']
+selected_features = ['times', 'x', 'y', 'z']
 
-# # Create a new dictionary containing only the selected features
-# selected_data = {feature: result2[feature] for feature in selected_features}
-# print(selected_data)
+# Create a new dictionary containing only the selected features
+selected_data = {feature: result2[feature] for feature in selected_features}
 
-# # Create a DataFrame from the selected data
-# df = pd.DataFrame(selected_data)
+# Create a DataFrame from the selected data
+df = pd.DataFrame(selected_data)
 
-# # Define the CSV file path where you want to save the data
-# csv_file_path = 'selected_data.csv'
+# Define the CSV file path where you want to save the data
+csv_file_path = 'selected_data.csv'
 
-# # Save the DataFrame to a CSV file
-# df.to_csv(csv_file_path, index=False)
+# Save the DataFrame to a CSV file
+df.to_csv(csv_file_path, index=False)

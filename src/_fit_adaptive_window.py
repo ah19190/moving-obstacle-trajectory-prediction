@@ -102,7 +102,7 @@ def fit1(u: np.ndarray,
     threshold_scan = np.linspace(THRESHOLD_MIN, THRESHOLD_MAX, NUMBER_OF_THRESHOLD_VALUES)
     # Get a subset of the data for training and validation and the corresponding pde library
     u_train, u_validation, t_train, t_validation = get_subset_of_data(u, 0.5, t) # split the data into training and validation sets
-    pde_lib_train = ps.WeakPDELibrary(
+    pde_lib_train = ps.WeakPDELibrary( # This is the line causing issues 
         library_functions=library_functions,
         function_names=library_function_names,
         spatiotemporal_grid=t_train,
