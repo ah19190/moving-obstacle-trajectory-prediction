@@ -31,7 +31,6 @@ def projectile_motion(v0, theta_deg, t):
     return np.array([x, y, z])
 
 def main() -> None:
-
     # seed the random number generator
     np.random.seed(100)
     
@@ -63,7 +62,7 @@ def main() -> None:
         file.create_dataset(name="coordinate_data_noise", data=coordinate_data_noise)
         file.create_dataset(name="t", data=t)
 
-    # three_d_graph_result_ground_vs_noisy(coordinate_data,coordinate_data_noise, t) # check the effect of noise filter against original data
+    three_d_graph_result_ground_vs_noisy(coordinate_data,coordinate_data_noise, t) # check the effect of noise filter against original data
 
 if __name__ == "__main__":
     main()

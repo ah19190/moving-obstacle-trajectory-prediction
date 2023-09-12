@@ -80,7 +80,7 @@ def main()-> None:
     coordinate_data_noise = coordinate_data + np.random.normal(0, rmse * NOISE_LEVEL, coordinate_data.shape)  # Add noise
 
     # Apply a moving average filter to denoise the data
-    coordinate_data_noise = moving_average_filter(coordinate_data_noise, MOVING_WINDOW_SIZE)
+    # coordinate_data_noise = moving_average_filter(coordinate_data_noise, MOVING_WINDOW_SIZE)
     
     # Use gaussian filter to denoise the data
     # coordinate_data_noise = gaussian_filter1d(coordinate_data_noise, sigma=SIGMA)
@@ -95,7 +95,7 @@ def main()-> None:
     # coordinate_data_train, coordinate_data_noise_train, t_train = get_subset_of_data(coordinate_data, coordinate_data_noise, t, 0.2, 0.5)
     # three_d_graph_result_ground_vs_noisy(coordinate_data_train, coordinate_data_noise_train, t_train) # check effectiveness of noise filter by plotting against actual data
 
-    three_d_graph_result_ground_vs_noisy(coordinate_data, coordinate_data_noise, t) # check effectiveness of noise filter by plotting against actual data
+    # three_d_graph_result_ground_vs_noisy(coordinate_data, coordinate_data_noise, t) # check effectiveness of noise filter by plotting against actual data
 
 if __name__ == '__main__':
     # logging.info("parsing drone data.")

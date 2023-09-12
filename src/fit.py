@@ -110,8 +110,8 @@ def fit1(u: np.ndarray,
     # )
     # _, lowest_rmse_threshold, best_nu = fit_and_tune_sr3(pde_lib_train, ps.FiniteDifference(), u_train, t[1] - t[0], u_validation, threshold_scan) # u_train needs to be the whole length of the data, so maybe we need a longer time period for validation
     
-    _, lowest_rmse_threshold, best_nu = fit_and_tune_sr3(pde_lib, ps.FiniteDifference(), u, t[1] - t[0], u, threshold_scan) # u_train needs to be the whole length of the data, so maybe we need a longer time period for validation
-    
+    _, lowest_rmse_threshold, best_nu = fit_and_tune_sr3(pde_lib, ps.FiniteDifference(), u, t[1] - t[0], u, threshold_scan)
+    print("lowest_rmse_threshold: ", lowest_rmse_threshold)
     # Instantiate and fit the SINDy model with the integral of u_dot
     optimizer = ps.SR3(
     threshold=lowest_rmse_threshold, nu=best_nu, thresholder="l1", max_iter=10, normalize_columns=True, tol=1e-1

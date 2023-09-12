@@ -1,5 +1,6 @@
-# Code to run the simulation for the csv files
-# We will take WINDOW_SIZE seconds of data to predict the next PREDICTION_TIME seconds of data 
+# Code to run the simulation fir the projectile motion data
+# Generate the data for a projectile motion problem every PREDICTION_FREQUENCY seconds 
+# We will then take WINDOW_SIZE seconds of data to predict the next PREDICTION_TIME seconds of data 
 
 import numpy as np
 import argparse
@@ -7,14 +8,17 @@ import h5py
 import subprocess
 from pathlib import Path
 
-from commons import DATA_DIR, PREDICTION_FREQUENCY, WINDOW_SIZE, MAX_WINDOW_SIZE, MIN_WINDOW_SIZE
+from commons_projectile_data import DATA_DIR, PREDICTION_FREQUENCY, MAX_WINDOW_SIZE, MIN_WINDOW_SIZE
 
 def run_import_real_data_script():
-    command = ["python3", "import_data.py"]
+    command = ["python3", "import_real_data.py"]
+    subprocess.run(command)
+
+def run_generate_projectile_data_script():
+    command = ["python3", "generate_projectile_data.py"]
     subprocess.run(command)
 
 def run_fit_script(time, window_size):
-    # command = ["python3", "_fit_cont.py", "--start_time", str(time)]
     command = ["python3", "fit.py", "--start_time", str(time), "--window_size", str(window_size)]
     subprocess.run(command)
 
@@ -61,7 +65,7 @@ def main():
     args = parser.parse_args()
     data_dir = args.data_dir
     
-    run_import_real_data_script() # This will get data from whichever file specified in commons.py
+    run_generate_projectile_data_script() # This will generate data for a projectile motion problem 
     
     data_file_dir = Path(data_dir, "data.hdf5")
     with h5py.File(data_file_dir, "r") as file_read:
@@ -78,16 +82,14 @@ def main():
     window_size = MIN_WINDOW_SIZE
 
     total_rmse_score = 0
-    total_count = 0
     # This is the part where I fit and predict every PREDICTION_FREQUENCY seconds of data
-    while start_time <= end_time - PREDICTION_FREQUENCY - MAX_WINDOW_SIZE:  
+    while start_time <= end_time - PREDICTION_FREQUENCY:  
         run_fit_script(start_time, window_size)
         
         rmse_score_new = run_predict_script2(start_time, window_size)
-        # print("current window size: ", window_size)
         print("rmse_score_new: ", rmse_score_new)
         total_rmse_score += rmse_score_new
-        total_count += 1
+        # print("current window size: ", window_size)
 
         if rmse_score_new > rmse_score and window_size > MIN_WINDOW_SIZE: # if rmse_score_new is worse than rmse_score, then decrease window_size
             window_size = 0.75 * window_size
@@ -98,11 +100,10 @@ def main():
         else: # if window already at maximum or minimum, don't change window_size
             rmse_score = rmse_score_new
 
-        # print("new window size: ", window_size)
+        print("new window size: ", window_size)
 
         start_time += PREDICTION_FREQUENCY
+    print("total rmse score: ", total_rmse_score)
 
-    print("avg rmse score: ", total_rmse_score/total_count)
-    
 if __name__ == "__main__":
     main()

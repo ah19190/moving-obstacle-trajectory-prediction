@@ -77,12 +77,17 @@ def main():
     rmse_score = 0
     window_size = MIN_WINDOW_SIZE
 
+    total_rmse_score = 0
+    total_count = 0
     # This is the part where I fit and predict every PREDICTION_FREQUENCY seconds of data
-    while start_time <= end_time - PREDICTION_FREQUENCY:  
+    while start_time <= end_time - PREDICTION_FREQUENCY - MAX_WINDOW_SIZE:  
         run_fit_script(start_time, window_size)
         
         rmse_score_new = run_predict_script2(start_time, window_size)
-        print("current window size: ", window_size)
+        # print("current window size: ", window_size)
+        print("rmse_score_new: ", rmse_score_new)
+        total_rmse_score += rmse_score_new
+        total_count += 1
 
         if rmse_score_new > rmse_score and window_size > MIN_WINDOW_SIZE: # if rmse_score_new is worse than rmse_score, then decrease window_size
             window_size = 0.75 * window_size
@@ -93,18 +98,11 @@ def main():
         else: # if window already at maximum or minimum, don't change window_size
             rmse_score = rmse_score_new
 
-        # if rmse_score_new >= rmse_score : # if rmse_score_new is worse than rmse_score, then decrease window_size
-        #     window_size = MIN_WINDOW_SIZE
-        #     rmse_score = rmse_score_new
-        # elif rmse_score_new < rmse_score: # if rmse_score_new is better than rmse_score, then increase window_size
-        #     window_size = MAX_WINDOW_SIZE
-        #     rmse_score = rmse_score_new
-        # else: # if window already at maximum or minimum, don't change window_size
-        #     rmse_score = rmse_score_new
-
-        print("new window size: ", window_size)
+        # print("new window size: ", window_size)
 
         start_time += PREDICTION_FREQUENCY
 
+    print("avg rmse score: ", total_rmse_score/total_count)
+    
 if __name__ == "__main__":
     main()

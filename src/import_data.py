@@ -64,6 +64,10 @@ def get_subset_of_data(coordinate_data, coordinate_data_noise, t, start, end):
     return coordinate_data_train, coordinate_data_noise_train, t_train
 
 def main()-> None:
+
+    # seed the random number generator
+    np.random.seed(100)
+    
     # parse the data 
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
@@ -95,7 +99,7 @@ def main()-> None:
     # coordinate_data_train, coordinate_data_noise_train, t_train = get_subset_of_data(coordinate_data, coordinate_data_noise, t, 0.2, 0.5)
     # three_d_graph_result_ground_vs_noisy(coordinate_data_train, coordinate_data_noise_train, t_train) # check effectiveness of noise filter by plotting against actual data
 
-    three_d_graph_result_ground_vs_noisy(coordinate_data, coordinate_data_noise, t) # check effectiveness of noise filter by plotting against actual data
+    # three_d_graph_result_ground_vs_noisy(coordinate_data, coordinate_data_noise, t) # check effectiveness of noise filter by plotting against actual data
 
 if __name__ == '__main__':
     # logging.info("parsing drone data.")
