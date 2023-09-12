@@ -196,6 +196,7 @@ def main() -> float:
     # Time points for the prediction
     t_predict = t[end_index:end_index_with_prediction] # predict the next PREDICTION_TIME seconds of data  
 
+    # Time for all time point until end of prediction
     coordinate_data_start_to_prediction_end = coordinate_data[0:end_index_with_prediction]
 
     # predict the trajectory using the model_all
@@ -205,7 +206,7 @@ def main() -> float:
     three_d_graph_result(coordinate_data_start_to_prediction_end, coordinate_ground_truth, simulate_data)
 
     # Plot the result using graph_result 
-    # graph_result(coordinate_data[0: end_index_with_prediction], simulate_data, t[0:end_index_with_prediction], t_predict)
+    # graph_result(coordinate_data_start_to_prediction_end, simulate_data, t[0:end_index_with_prediction], t_predict)
     # graph_result_prediction_only(coordinate_data[end_index:end_index_with_prediction], simulate_data, t_predict)
     
     # Graph the error between the ground truth and the prediction
