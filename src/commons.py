@@ -8,6 +8,7 @@ OUTPUT_DIR = str(Path(Path(__file__).parent.parent, "output"))
 
 # Data file we want to parse for trajectory data 
 # TRAJECTORY_DATA_FILE = "../original-data/UAV_Gazebo_data/UAV_takeoff_circle_cut.txt" # for Gazebo data
+# TRAJECTORY_DATA_FILE = "../original-data/UAV_Gazebo_data/UAV_takeoff.txt" # for Frisbee data    
 TRAJECTORY_DATA_FILE = "../original-data/Frisbee.csv" # for Frisbee data
 
 
@@ -16,7 +17,7 @@ MOVING_WINDOW_SIZE = 15 # Moving average of 10 data points
 SIGMA = 0.3 # Standard deviation for Gaussian filter
 
 # Noise level to add to the data (use this for generated data with no noise)
-NOISE_LEVEL = 0.00
+NOISE_LEVEL = 0.03
 
 # # Gazebo drone data 
 # # STLSQ constants

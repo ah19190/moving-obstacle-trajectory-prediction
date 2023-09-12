@@ -211,15 +211,16 @@ def main() -> float:
     
     # Graph the error between the ground truth and the prediction
     # graph_error(coordinate_data[end_index:end_index_with_prediction], simulate_data, t_predict)
-
+    
+    # Plot the simulation against the ground truth, showing the ensemble predictions as well 
+    three_d_graph_result_ensemble(coordinate_data_fit, coordinate_ground_truth, t_predict, ensemble_coefs, model_all)
+    
     #score the RMSE 
     rmse_score = RMSE(simulate_data, coordinate_data[end_index:end_index_with_prediction])
-
     # return RMSE score 
     return rmse_score
 
-    # Plot the simulation against the ground truth, showing the ensemble predictions as well 
-    # three_d_graph_result_ensemble(coordinate_data_fit, coordinate_ground_truth, t_predict, ensemble_coefs, model_all)
+    
 
 if __name__ == "__main__":
     rmse_score = main()
