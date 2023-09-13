@@ -36,21 +36,13 @@ Explain how to install and set up the project. Include any prerequisites and dep
 
 ## Running the code  
 
-Within VSCode, go to src directory and run the following commands in this order: 
+Within VSCode, go to src directory and run main file: 
 
 ```
-python3 generate_projectile_data.py
+python3 main.py
 ```
 
+Or to run the projectile motion dataset instead:  
 ```
-python3 _fit.py
-```
-
-```
-python3 _predict.py
-```
-
-Or within the src folder, run the shellscript 
-```
-./run_scripts.sh
+python3 main_projectile_motion.py
 ```
