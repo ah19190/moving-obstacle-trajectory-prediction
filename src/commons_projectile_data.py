@@ -11,12 +11,12 @@ MOVING_WINDOW_SIZE = 15 # Moving average of 10 data points
 SIGMA = 0.3 # Standard deviation for Gaussian filter
 
 # Noise level to add to the data (use this for generated data with no noise)
-NOISE_LEVEL = 0.02
+NOISE_LEVEL = 0.00
 
 # Projectile motion problem
 # STLSQ constants 
-THRESHOLD_MIN = 0.5
-THRESHOLD_MAX  = 0.5
+THRESHOLD_MIN = 0.0
+THRESHOLD_MAX  = 0.2
 # THRESHOLD_MIN = 0.00
 # THRESHOLD_MAX  = 0.3
 NUMBER_OF_THRESHOLD_VALUES = 21

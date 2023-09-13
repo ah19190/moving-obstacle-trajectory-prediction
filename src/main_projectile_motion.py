@@ -73,7 +73,8 @@ def main():
 
     # Get start and end time for the while loop
     # start_time = t[0]
-    start_time_index = find_time_indices(t, t[0], MIN_WINDOW_SIZE)
+    # start_time_index = find_time_indices(t, t[0], MIN_WINDOW_SIZE)
+    start_time_index = 0
     start_time = t[start_time_index]
     end_time = t[-1] 
 
@@ -84,7 +85,8 @@ def main():
     total_rmse_score = 0
     total_count = 0
     # This is the part where I fit and predict every PREDICTION_FREQUENCY seconds of data
-    while start_time <= end_time - PREDICTION_FREQUENCY:  
+    # while start_time <= end_time - PREDICTION_FREQUENCY:
+    while start_time + window_size <= end_time - PREDICTION_FREQUENCY:  
         run_fit_script(start_time, window_size)
         
         rmse_score_new = run_predict_script2(start_time, window_size)
@@ -102,9 +104,11 @@ def main():
         else: # if window already at maximum or minimum, don't change window_size
             rmse_score = rmse_score_new
 
-        # print("new window size: ", window_size)
+        print("new window size: ", window_size)
 
         start_time += PREDICTION_FREQUENCY
+        # window_size += PREDICTION_FREQUENCY
+        
     print("avg rmse score: ", total_rmse_score/total_count)
 
 if __name__ == "__main__":

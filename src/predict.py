@@ -203,7 +203,7 @@ def main() -> float:
     simulate_data = model_all.simulate(coordinate_data_fit[-1, :], t_predict, integrator="odeint")
 
     # Plot the simulation against the ground truth
-    # three_d_graph_result(coordinate_data_start_to_prediction_end, coordinate_ground_truth, simulate_data)
+    three_d_graph_result(coordinate_data_start_to_prediction_end, coordinate_ground_truth, simulate_data)
 
     # Plot the result using graph_result 
     # graph_result(coordinate_data_start_to_prediction_end, simulate_data, t[0:end_index_with_prediction], t_predict)
@@ -218,9 +218,7 @@ def main() -> float:
     #score the RMSE 
     rmse_score = RMSE(simulate_data, coordinate_data[end_index:end_index_with_prediction])
     # return RMSE score 
-    return rmse_score
-
-    
+    return rmse_score 
 
 if __name__ == "__main__":
     rmse_score = main()
