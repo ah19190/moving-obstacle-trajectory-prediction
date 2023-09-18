@@ -82,6 +82,7 @@ def main():
     window_size = MIN_WINDOW_SIZE
 
     total_rmse_score = 0
+    count = 0
     # This is the part where I fit and predict every PREDICTION_FREQUENCY seconds of data
     while start_time <= end_time - PREDICTION_FREQUENCY:  
         run_fit_script(start_time, window_size)
@@ -89,6 +90,7 @@ def main():
         rmse_score_new = run_predict_script2(start_time, window_size)
         print("rmse_score_new: ", rmse_score_new)
         total_rmse_score += rmse_score_new
+        count += 1
         # print("current window size: ", window_size)
 
         if rmse_score_new > rmse_score and window_size > MIN_WINDOW_SIZE: # if rmse_score_new is worse than rmse_score, then decrease window_size
@@ -103,7 +105,7 @@ def main():
         print("new window size: ", window_size)
 
         start_time += PREDICTION_FREQUENCY
-    print("total rmse score: ", total_rmse_score)
+    print("avg rmse score: ", total_rmse_score/count)
 
 if __name__ == "__main__":
     main()

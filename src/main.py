@@ -8,6 +8,7 @@ import subprocess
 from pathlib import Path
 
 from commons import DATA_DIR, PREDICTION_FREQUENCY, WINDOW_SIZE, MAX_WINDOW_SIZE, MIN_WINDOW_SIZE
+from predict import predict
 
 def run_import_real_data_script():
     command = ["python3", "import_data.py"]
@@ -18,22 +19,22 @@ def run_fit_script(time, window_size):
     command = ["python3", "fit.py", "--start_time", str(time), "--window_size", str(window_size)]
     subprocess.run(command)
 
-def run_predict_script2(time, window_size):
-    command = ["python3", "predict.py", "--start_time", str(time), "--window_size", str(window_size)]
-    completed_process = subprocess.run(command, stdout=subprocess.PIPE, text=True)
+# def run_predict_script2(time, window_size):
+#     command = ["python3", "predict.py", "--start_time", str(time), "--window_size", str(window_size)]
+#     completed_process = subprocess.run(command, stdout=subprocess.PIPE, text=True)
     
-    # Check if the process completed successfully
-    if completed_process.returncode == 0:
-        # Parse the RMSE score from the standard output
-        output_lines = completed_process.stdout.splitlines()
-        for line in output_lines:
-            if line.startswith("RMSE Score:"):
-                rmse_score_str = line.split(":")[1].strip()
-                rmse_score = float(rmse_score_str)
-                return rmse_score
-    else:
-        print("Error running the script.")
-        return None
+#     # Check if the process completed successfully
+#     if completed_process.returncode == 0:
+#         # Parse the RMSE score from the standard output
+#         output_lines = completed_process.stdout.splitlines()
+#         for line in output_lines:
+#             if line.startswith("RMSE Score:"):
+#                 rmse_score_str = line.split(":")[1].strip()
+#                 rmse_score = float(rmse_score_str)
+#                 return rmse_score
+#     else:
+#         print("Error running the script.")
+#         return None
 
 # Function to find the start and end time indices 
 def find_time_indices(t, start_time, window_size):
@@ -78,17 +79,15 @@ def main():
     rmse_score = 0
     window_size = MIN_WINDOW_SIZE
 
-    total_rmse_score = 0
-    total_count = 0
+    # total_rmse_score = 0
+    # total_count = 0
     # This is the part where I fit and predict every PREDICTION_FREQUENCY seconds of data
     # while start_time + window_size <= end_time - PREDICTION_FREQUENCY - MAX_WINDOW_SIZE:  
     while start_time + window_size <= end_time - PREDICTION_FREQUENCY:  
         run_fit_script(start_time, window_size)
         
-        rmse_score_new = run_predict_script2(start_time, window_size)
-        
-        total_rmse_score += rmse_score_new
-        total_count += 1
+        # rmse_score_new, simulate_data = run_predict_script2(start_time, window_size)
+        rmse_score_new, simulate_data, coordinate_data_start_to_prediction_end, coordinate_ground_truth = predict(start_time, window_size)
 
         if rmse_score_new > rmse_score and window_size > MIN_WINDOW_SIZE: # if rmse_score_new is worse than rmse_score, then decrease window_size
             window_size = 0.75 * window_size
@@ -103,8 +102,6 @@ def main():
 
         start_time += PREDICTION_FREQUENCY
         # window_size += PREDICTION_FREQUENCY
-
-    print("avg rmse score: ", total_rmse_score/total_count)
     
 if __name__ == "__main__":
     main()

@@ -4,7 +4,6 @@
 from copy import copy
 import argparse
 import dill as pickle
-# import pickle
 from pathlib import Path
 from typing import Tuple
 
@@ -100,23 +99,24 @@ def fit1(u: np.ndarray,
 
     threshold_scan = np.linspace(THRESHOLD_MIN, THRESHOLD_MAX, NUMBER_OF_THRESHOLD_VALUES)
     # Get a subset of the data for training and validation and the corresponding pde library
-    u_train, u_validation, t_train, t_validation = get_subset_of_data(u, 0.5, t) # split the data into training and validation sets
-    pde_lib_train = ps.WeakPDELibrary(
-        library_functions=library_functions,
-        function_names=library_function_names,
-        spatiotemporal_grid=t_train,
-        is_uniform=True,
-        K=100,
-    )
-    _, lowest_rmse_threshold, best_nu = fit_and_tune_sr3(pde_lib_train, ps.FiniteDifference(), u_train, t[1] - t[0], u_validation, threshold_scan) # u_train needs to be the whole length of the data, so maybe we need a longer time period for validation
+    # u_train, u_validation, t_train, t_validation = get_subset_of_data(u, 0.5, t) # split the data into training and validation sets
+    # pde_lib_train = ps.WeakPDELibrary(
+    #     library_functions=library_functions,
+    #     function_names=library_function_names,
+    #     spatiotemporal_grid=t_train,
+    #     is_uniform=True,
+    #     K=100,
+    # )
+    # _, lowest_rmse_threshold, best_nu = fit_and_tune_sr3(pde_lib_train, ps.FiniteDifference(), u_train, t[1] - t[0], u_validation, threshold_scan) # u_train needs to be the whole length of the data, so maybe we need a longer time period for validation
     
-    # _, lowest_rmse_threshold, best_nu = fit_and_tune_sr3(pde_lib, ps.FiniteDifference(), u, t[1] - t[0], u, threshold_scan)
+    _, lowest_rmse_threshold, best_nu = fit_and_tune_sr3(pde_lib, ps.FiniteDifference(), u, t[1] - t[0], u, threshold_scan)
     # Instantiate and fit the SINDy model with the integral of u_dot
     optimizer = ps.SR3(
     threshold=lowest_rmse_threshold, nu=best_nu, thresholder="l1", max_iter=10, normalize_columns=True, tol=1e-1
     )  
     model = ps.SINDy(feature_library=pde_lib, optimizer=optimizer)
     model.fit(u, t=t, ensemble= True, quiet=True)
+    # model.fit(u, t=t, quiet=True)
 
     ensemble_coefs = np.asarray(model.coef_list)
     median_ensemble_coefs = np.median(ensemble_coefs, axis=0) # get the median of each coefficient
@@ -133,6 +133,7 @@ def fit1(u: np.ndarray,
     )  
     original_model = ps.SINDy(feature_library=ode_lib, optimizer=optimizer)
     original_model.fit(u, t=t, ensemble= True, quiet=True)
+    # original_model.fit(u, t=t, quiet=True)
     original_model.print()
 
     ensemble_coefs = np.asarray(original_model.coef_list)
@@ -189,6 +190,7 @@ def main() -> None:
     coordinate_data_noise_window = coordinate_data_noise[start_index:end_index]
     
     model_all, ensemble_coefs = fit1(coordinate_data_noise_window, t_window)
+    # model_all = fit1(coordinate_data_noise_window, t_window)
 
     Path(output_dir).mkdir(exist_ok=True)
     output_file_dir = Path(output_dir, "models.pkl")

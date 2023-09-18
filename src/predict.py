@@ -161,6 +161,78 @@ def RMSE(predicted_data, ground_truth_data):
     """
     return math.sqrt(mean_squared_error(ground_truth_data, predicted_data))
 
+def MSE(predicted_data, ground_truth_data):
+    """
+    Finds the mean square error between the predicted data and the ground truth data.
+
+    Parameters:
+        predicted_data (numpy.ndarray): Array of predicted data.
+        ground_truth_data (numpy.ndarray): Array of ground truth data.
+
+    Returns:
+        float: Mean square error between the predicted data and the ground truth data.
+    """
+    return mean_squared_error(ground_truth_data, predicted_data)
+
+def predict(start_time, window_size): 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
+    parser.add_argument("--output_dir", dest="output_dir", default=OUTPUT_DIR)
+    # parser.add_argument("--start_time", type=float, required=True)  
+    # parser.add_argument("--window_size", type=float, required=True)
+
+    shell = get_ipython().__class__.__name__
+    argv = [] if (shell == "ZMQInteractiveShell") else sys.argv[1:]
+    args = parser.parse_args(argv)
+    data_dir = args.data_dir
+    output_dir = args.output_dir
+    # start_time = args.start_time
+    # window_size = args.window_size
+
+    # Load the data from the data_dir
+    coordinate_data, t = load_data(data_dir)   
+    model_all = load_model_new(output_dir)
+    ensemble_coefs = load_ensemble_models(output_dir) # load the ensemble model coefficients
+
+    # Get the true data to compare it to the predicted data
+    start_index, end_index, end_index_with_prediction = find_time_indices(t, start_time, window_size, PREDICTION_TIME)
+    
+    # Select the window used for fitting   
+    coordinate_data_fit = coordinate_data[start_index:end_index]
+    # t_fit = t[start_index:end_index]
+
+    # Select the window of time that was used for fitting + PREDICTION_TIME seconds
+    t_ground_truth = t[start_index:end_index_with_prediction]
+    coordinate_ground_truth = coordinate_data[start_index:end_index_with_prediction] 
+
+    # Time points for the prediction
+    t_predict = t[end_index:end_index_with_prediction] # predict the next PREDICTION_TIME seconds of data  
+
+    # Time for all time point until end of prediction
+    coordinate_data_start_to_prediction_end = coordinate_data[0:end_index_with_prediction]
+
+    # predict the trajectory using the model_all
+    simulate_data = model_all.simulate(coordinate_data_fit[-1, :], t_predict, integrator="odeint")
+
+    # Plot the simulation against the ground truth
+    three_d_graph_result(coordinate_data_start_to_prediction_end, coordinate_ground_truth, simulate_data)
+
+    # Plot the result using graph_result 
+    # graph_result(coordinate_data_start_to_prediction_end, simulate_data, t[0:end_index_with_prediction], t_predict)
+    # graph_result_prediction_only(coordinate_data[end_index:end_index_with_prediction], simulate_data, t_predict)
+    
+    # Graph the error between the ground truth and the prediction
+    # graph_error(coordinate_data[end_index:end_index_with_prediction], simulate_data, t_predict)
+    
+    # Plot the simulation against the ground truth, showing the ensemble predictions as well 
+    # three_d_graph_result_ensemble(coordinate_data_fit, coordinate_ground_truth, t_predict, ensemble_coefs, model_all)
+    
+    #score the RMSE 
+    rmse_score = RMSE(simulate_data, coordinate_data[end_index:end_index_with_prediction])
+    # mse_score = MSE(simulate_data, coordinate_data[end_index:end_index_with_prediction])
+    # return RMSE score 
+    return rmse_score, simulate_data, coordinate_data_start_to_prediction_end, coordinate_ground_truth
+
 def main() -> float:
 
     parser = argparse.ArgumentParser()
@@ -217,9 +289,10 @@ def main() -> float:
     
     #score the RMSE 
     rmse_score = RMSE(simulate_data, coordinate_data[end_index:end_index_with_prediction])
+    # mse_score = MSE(simulate_data, coordinate_data[end_index:end_index_with_prediction])
     # return RMSE score 
-    return rmse_score 
+    return rmse_score, simulate_data
 
 if __name__ == "__main__":
-    rmse_score = main()
+    rmse_score, simulate_data, coordinate_data_start_to_prediction_end, coordinate_ground_truth = main()
     print(f"RMSE Score: {rmse_score}")
