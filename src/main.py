@@ -55,6 +55,54 @@ def find_time_indices(t, start_time, window_size):
     
     return start_prediction_index
 
+# def main(): 
+#     # Get the coordinate_data and t from projectile motion data
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("--data_dir", dest="data_dir", default=DATA_DIR)
+#     args = parser.parse_args()
+#     data_dir = args.data_dir
+    
+#     run_import_real_data_script() # This will get data from whichever file specified in commons.py
+    
+#     data_file_dir = Path(data_dir, "data.hdf5")
+#     with h5py.File(data_file_dir, "r") as file_read:
+#         t = np.array(file_read.get("t"))
+
+#     # Get start and end time for the while loop
+#     # start_time = t[0]
+#     start_time_index = find_time_indices(t, t[0], MIN_WINDOW_SIZE)
+#     # start_time = t[start_time_index]
+#     start_time = t[0]
+#     end_time = t[-1] 
+
+#     # declare rmse_score
+#     rmse_score = 0
+#     window_size = MIN_WINDOW_SIZE
+
+#     # total_rmse_score = 0
+#     # total_count = 0
+#     # This is the part where I fit and predict every PREDICTION_FREQUENCY seconds of data
+#     # while start_time + window_size <= end_time - PREDICTION_FREQUENCY - MAX_WINDOW_SIZE:  
+#     while start_time + window_size <= end_time - PREDICTION_FREQUENCY:  
+#         run_fit_script(start_time, window_size)
+        
+#         # rmse_score_new, simulate_data = run_predict_script2(start_time, window_size)
+#         rmse_score_new, simulate_data, coordinate_data_start_to_prediction_end, coordinate_ground_truth = predict(start_time, window_size)
+
+#         if rmse_score_new > rmse_score and window_size > MIN_WINDOW_SIZE: # if rmse_score_new is worse than rmse_score, then decrease window_size
+#             window_size = 0.75 * window_size
+#             rmse_score = rmse_score_new
+#         elif rmse_score_new < rmse_score and window_size < MAX_WINDOW_SIZE: # if rmse_score_new is better than rmse_score, then increase window_size
+#             window_size = 1.5 * window_size
+#             rmse_score = rmse_score_new
+#         else: # if window already at maximum or minimum, don't change window_size
+#             rmse_score = rmse_score_new
+
+#         # print("new window size: ", window_size)
+
+#         start_time += PREDICTION_FREQUENCY
+#         # window_size += PREDICTION_FREQUENCY
+
 def main(): 
     # Get the coordinate_data and t from projectile motion data
     parser = argparse.ArgumentParser()
@@ -105,3 +153,4 @@ def main():
     
 if __name__ == "__main__":
     main()
+

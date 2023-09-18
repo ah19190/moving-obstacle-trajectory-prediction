@@ -153,6 +153,15 @@ def three_d_graph_result(u: np.ndarray, u_window: np.ndarray, u_approximation: n
     # Model the trajectory in 3D 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
+    # # Set the axis limits
+    # ax.set_xlim(0, 40)
+    # ax.set_ylim(0, 30)
+    # ax.set_zlim(0, 30)
+
+    # Set the axis limits
+    ax.set_xlim(-1.0,1.5 )
+    ax.set_ylim(-1.0, 1)
+    ax.set_zlim(-1, 0.5)
 
     # Set labels and title
     ax.set_xlabel('X (m)')
@@ -179,7 +188,7 @@ def three_d_graph_result(u: np.ndarray, u_window: np.ndarray, u_approximation: n
     ax.scatter(u_approximation_x[0, 0], u_approximation_y[0, 0], u_approximation_z[0, 0], color='green', label='Start of SINDy approximation')
 
     # Plot the SINDy approximation of the trajectory
-    ax.plot(u_approximation_x, u_approximation_y, u_approximation_z, color='blue', label='SINDy')
+    ax.plot(u_approximation_x, u_approximation_y, u_approximation_z, color='red', label='SINDy')
 
     plt.legend()
     plt.show()
