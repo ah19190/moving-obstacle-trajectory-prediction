@@ -22,6 +22,6 @@ for i in range(len(img)):
 ani = animation.ArtistAnimation(fig, frames, interval=250, blit=True, repeat_delay=1000)
 
 # Uncomment the line below to save the animation as an MP4 file
-ani.save('UAV_takeoff_circle_normal.mp4')
+ani.save('UAV_takeoff_circle_normal_no_window.mp4')
 
 plt.show()

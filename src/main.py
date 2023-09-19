@@ -137,19 +137,19 @@ def main():
         # rmse_score_new, simulate_data = run_predict_script2(start_time, window_size)
         rmse_score_new, simulate_data, coordinate_data_start_to_prediction_end, coordinate_ground_truth = predict(start_time, window_size)
 
-        if rmse_score_new > rmse_score and window_size > MIN_WINDOW_SIZE: # if rmse_score_new is worse than rmse_score, then decrease window_size
-            window_size = 0.75 * window_size
-            rmse_score = rmse_score_new
-        elif rmse_score_new < rmse_score and window_size < MAX_WINDOW_SIZE: # if rmse_score_new is better than rmse_score, then increase window_size
-            window_size = 1.5 * window_size
-            rmse_score = rmse_score_new
-        else: # if window already at maximum or minimum, don't change window_size
-            rmse_score = rmse_score_new
+        # if rmse_score_new > rmse_score and window_size > MIN_WINDOW_SIZE: # if rmse_score_new is worse than rmse_score, then decrease window_size
+        #     window_size = 0.75 * window_size
+        #     rmse_score = rmse_score_new
+        # elif rmse_score_new < rmse_score and window_size < MAX_WINDOW_SIZE: # if rmse_score_new is better than rmse_score, then increase window_size
+        #     window_size = 1.5 * window_size
+        #     rmse_score = rmse_score_new
+        # else: # if window already at maximum or minimum, don't change window_size
+        #     rmse_score = rmse_score_new
 
         # print("new window size: ", window_size)
 
-        start_time += PREDICTION_FREQUENCY
-        # window_size += PREDICTION_FREQUENCY
+        # start_time += PREDICTION_FREQUENCY
+        window_size += PREDICTION_FREQUENCY
     
 if __name__ == "__main__":
     main()
